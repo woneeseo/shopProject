@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.cart">
+
+	<select id="findCartGoods" resultType="String" parameterType="kr.co.domain.CartDTO">
+		select decode(count(*), 0, 'false', 'true') from cart
+		where productId = #{productId}
+		and userid = #{userid} 
+	</select>
+	
+	<insert id="addGoodsInCart">
+		INSERT INTO cart (cartId, userid, productId) 
+		VALUES ((SELECT NVL2(MAX(cartId), MAX(cartId)+1, 1) FROM cart), #{userid}, #{productId})
+		<selectKey keyProperty="cartId" resultType="integer" order="AFTER">
+			SELECT MAX(cartId) FROM cart
+		</selectKey>
+	</insert>
+	
+	<resultMap type="kr.co.domain.CartDTO" id="cartResult">
+		<result property="cartId" column="cartId"/>
+		<result property="userid" column="userId"/>
+		<result property="productId" column="productId"/>
+		<result property="cart_qty" column="cart_qty"/>
+		<result property="regDate" column="regDate"/>
+	</resultMap>
+	
+	<resultMap type="kr.co.domain.ProductDTO" id="productResult">
+		<result property="productId" column="productId"/>
+		<result property="productName" column="productName"/>
+		<result property="price" column="price"/>
+		<result property="stock" column="stock"/>
+		<result property="productDist" column="productDist"/>
+		<result property="productInfo" column="productInfo"/>
+		<result property="filename" column="filename"/>
+	</resultMap>
+	
+	<select id="selectCartList" resultMap="cartResult" parameterType="kr.co.domain.CartDTO">
+		SELECT * FROM cart WHERE userid = #{userid}
+	</select>
+	
+	<select id="selectGoodsList" resultMap="productResult" parameterType="java.util.Map">
+		SELECT * FROM product
+		WHERE productId = #{productId}
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item.productId}
+		</foreach>
+		ORDER BY regDate DESC
+	</select>
+</mapper>

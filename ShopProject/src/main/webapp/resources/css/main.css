@@ -1,0 +1,77 @@
+@charset "UTF-8";
+
+#gnb{
+	
+	background-color: #474749;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+#gnb a{
+	float: left;
+	font-size: 2em;
+	font-family: 'Impact';
+	color: white;
+	text-decoration: none;
+	margin-left: 30px;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+
+#gnb button{
+	margin-right: 25px;
+	color: white;
+	text-decoration: none;
+	border-color: transparent;
+	background-color: transparent;
+}
+
+#gnb button:hover{
+	color: #868689;
+	border-color: transparent;
+}
+
+.nav p{
+	font-size: 3em;
+}
+
+.nav nav ul li{
+	padding-top: 20px;
+	font-size: 1.5em;
+	font-family: 'Impact';
+	padding-bottom: 18px;
+}
+
+.nav nav ul li:hover{
+	background-color: #474749;
+	color: white;
+}
+
+.logo{
+	
+	width: 400px;
+	height : 200px;
+	text-align: center;
+	padding-top: 70px;
+}
+
+.logo a{
+	text-align: center;
+	font-family: 'Impact';
+	font-size: 3.5em;
+	text-decoration: none;
+	color: #474749;
+}
+
+.nav-justified{
+	height: 70px;
+	border-top: 1px solid #E1E0E4;
+	border-bottom: 1px solid #E1E0E4 !important;
+	text-align: center;
+}
+
+#login_log{
+	
+	color: white;
+}

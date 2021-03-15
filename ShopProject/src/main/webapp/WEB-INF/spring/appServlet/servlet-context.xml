@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+	<!-- 어노테이션을 이용해서 드라이버를 만들 수 있다 
+	예전에는 controller 인터페이스를 참조해 드라이버로 사용했었는데, 
+	annotation-driven가 어노테이션만을 이용해서 드라이버를 만들 수 있도록 -->
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+	<!-- src/main/webapp/resources 폴더를 인식할 수 있도록 함 -->
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+		<!-- view resolver : 뷰의 path를 할당해 화면에 결과를 띄울 수 있게 함 -->
+		<!-- 컨트롤러에서 반환되는 view의 이름을 가져와 view가 있는 경로와 
+							  확장자명까지 붙여 해당 view로 이동할 수 있게 함 -->
+	</beans:bean>
+	
+	<beans:bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<beans:property value="10485760" name="maxUploadSize">
+			<!-- value 는 1바이트부터 시작 : 1mb - 1048576(1048*1048) / 10mb - 1mb*10 -->
+		</beans:property>
+	</beans:bean>
+	
+	<beans:bean class="java.lang.String" id="uploadPath">
+		<beans:constructor-arg value="\\resources\\upload"></beans:constructor-arg>
+	</beans:bean>
+	
+	<!-- 파일 업로드를 위해 추가한 코드 : multipartResolver(업로드를 위한 전반적인 환경설정 및 크기 설정) / uploadPath : 업로드 위치 설정 -->
+	
+	<beans:bean id="logininterceptor" class="kr.co.interceptor.LoginInterceptor"></beans:bean>
+	<beans:bean id="authinterceptor" class="kr.co.interceptor.AuthInterceptor"></beans:bean>	
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/member/update"/>
+			<mapping path="/member/delete"/>
+			<mapping path="/member/read"/>	
+			<beans:ref bean="authinterceptor"/>
+		</interceptor>	
+		<interceptor>
+			 <mapping path="/member/loginPost"/>
+			 <beans:ref bean="logininterceptor"/>
+		</interceptor>
+	</interceptors>
+	
+	<context:component-scan base-package="kr.co.ezen" />
+	<context:component-scan base-package="kr.co.controller" />
+	
+	<!-- component-scan에 등록되지 않은 base-package로 웹을 실행하면 -->
+	<!-- 404 페이지 에러가 발생한다. : 객체를 만들어야 하는 것은 알고있지만, 
+	어디에 있는 어느 객체를 만들어야 하는지 component-scan로 등록되지 않아 404 페이지에러가 발생함 -->
+	
+	
+	
+</beans:beans>

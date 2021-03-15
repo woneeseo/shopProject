@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:aop="http://www.springframework.org/schema/aop"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+   xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd
+      http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+      http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+   
+   <!-- Root Context: defines shared resources visible to all other web components -->
+   
+   <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+   <!-- 커넥션 풀을 만드는 bean이라고 생각하면 된다. -->
+   <!-- class = "사용하고자 하는 jar클래스의 클래스패스"　-->
+   		<property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+   		<!-- 속성값에 문자열을 직접 넣을 때는 value, 속성을 보여주고 싶을 때는 rel -->
+   		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+   		<property name="username" value="shopper"></property>
+   		<property name="password" value="shopper"></property>
+   </bean>
+   
+   <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+   <!-- mybatis와 연결하기 sqlSessionFactory가 커넥션풀과 연결해 getConnection()의 역할을 함 -->
+   <!-- mybatis-spring-1.2.2.jar -> org.mybatis.spring -> SqlSessionFactoryBran.class 로 객체를 생성 -->
+   		<property name="dataSource" ref="dataSource"></property>
+   		<!-- dataSource라는 빈객체를 가져와 사용할 것이기 때문에 ref(reference) 속성을 사용해 객체를 참조해준다 -->
+   		<property value="classpath:/mybatis-config.xml" name="configLocation"></property>
+   		<!-- mybatis 환경설정 파일은 .xml로 만든다. 위치는 src/main/resources -->
+   		<property value="classpath:mappers/**/*Mapper.xml" name="mapperLocations"></property>
+   </bean>
+   
+   <bean destroy-method="clearCache" id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+  		<!-- sql session을 DAO에서 불러와 사용할 수 있도록 해준 빈 -->
+  		<!-- 이 빈을 선언해두면, 사용하고자 하는 DAO에서 객체를 만들어 간단하게 사용할 수 있고 따로 close()를 실행 할 필요도 없다 -->
+   		<!-- destroy-method="clearCache" : session의 작업이 끝나면 자동으로 닫히게 함 -->
+   		<constructor-arg ref="sqlSessionFactory" name="sqlSessionFactory"></constructor-arg>
+   </bean>
+   
+   <context:component-scan base-package="kr.co.repository"/>
+   <context:component-scan base-package="kr.co.service"/>
+   
+   
+   <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+   <!-- 자동으로 프록시 코드를 생성해주는 코드 -->  
+   <!-- 프록시? 진짜 객체를 복사한 가짜객체, 진짜객체에는 없는 +a기능까지 추가할 수 있음 -->
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   		<property name="dataSource" ref="dataSource">
+   		<!-- 트랜잭션을 사용하기 위해서는 커넥션이 필요하다 -> dataSource 에 이미 구현해놓은 커넥션이 있으므로 ref속성을 이용해 가져온다. -->
+   		</property>
+   </bean>
+   
+   <tx:annotation-driven/>
+   <!-- 어노테이션을 이용한 트랜잭션 작업을 하겠다고 선언해 준 코드 : 
+   서비스 클래스에 @Teansactional 어노테이션을 추가하기만 해도 클래스에 존재하는 메서드 전부 트랜잭션의 대상이 됨 -->
+</beans>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.product">
+
+	<select id="list" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM product ORDER BY regDate DESC
+	</select>
+	
+	<select id="read" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM product WHERE productId = #{productId}
+	</select>
+	
+	<update id="update">
+		UPDATE product SET productName = #{productName}, price = #{price}, productDist = #{productDist},
+		stock = #{stock}, productInfo = #{productInfo}, updateDate = SYSDATE 
+		WHERE productId = #{productId}
+	</update>
+	
+	<select id="getAttaches" resultType="string">
+		SELECT fullname FROM attach WHERE productId = #{productId} ORDER BY regDate ASC
+	</select>
+	
+	<delete id="deleteFile">
+		DELETE FROM attach WHERE fullname = #{filename}
+	</delete>
+	
+	<delete id="deleteFilesByBno">
+		DELETE FROM attach WHERE productId = #{productId}
+	</delete>
+	
+	<insert id="addAttach">
+		INSERT INTO attach (id, fullname, productId) 
+		VALUES ((SELECT NVL2(MAX(id), MAX(id)+1, 1) FROM attach), #{fullname}, #{productId})
+	</insert>
+	
+	<delete id="delete">
+		DELETE FROM product WHERE productId = #{productId}
+	</delete>
+	
+	<insert id="insert">
+		INSERT INTO product (productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate)
+		VALUES (#{productId}, #{productName}, #{price}, #{stock}, #{productDist}, #{productInfo}, #{filename},SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="getFilename" resultType="string">
+		SELECT fullname FROM(SELECT * FROM attach ORDER BY id asc)
+		WHERE ROWNUM = 1 AND productId = #{productId}
+	</select>
+	
+	<select id="getProductDistList" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM product WHERE productDist = #{productDist} ORDER BY regDate DESC
+	</select>
+
+</mapper>
