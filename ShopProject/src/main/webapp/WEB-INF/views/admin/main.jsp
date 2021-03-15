@@ -135,22 +135,6 @@
 			var productDist = $(this).attr("value");
 			location.assign("/product/" + productDist);
 		});
-		
-		$.getJSON("/admin/productList", function(result) {
-			
-			var str = '';
-			
-			$(result).each(function() {
-				var data = this; 
-				console.log(data);
-				
-				str += makeHtmlcode_list(data);
-					
-			});
-			
-			$(".products").html(str);
-			
-		});
 
 		
 		$("#go_to_member_insert").click(function(event) {

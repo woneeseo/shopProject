@@ -78,3 +78,6 @@ ALTER TABLE cart ADD CONSTRAINT cart_fk_userid FOREIGN KEY (userid) REFERENCES m
 ALTER TABLE cart ADD CONSTRAINT cart_fk_productId FOREIGN KEY (productId) REFERENCES product(productId)
 
 SELECT * from cart
+
+SELECT * FROM cart WHERE userid = 'm002'
+

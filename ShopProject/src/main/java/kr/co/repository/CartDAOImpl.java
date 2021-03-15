@@ -1,10 +1,12 @@
 package kr.co.repository;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import kr.co.domain.CartDTO;
@@ -32,18 +34,14 @@ public class CartDAOImpl implements CartDAO{
 	}
 
 	@Override
-	public List<CartDTO> selectCartList(CartDTO cartDTO) {
+	public List<CartDTO> getMyCartProductId(String userid) {
 		
-		List<CartDTO> cartList = sqlSession.selectList(NS+".selectCartList", cartDTO);
-		return cartList;
+		return sqlSession.selectList(NS+".getMyCartProductId", userid);
 	}
 
 	@Override
-	public List<ProductDTO> selectGoodsList(List<CartDTO> myCartList) {
-		List<ProductDTO> myGoodsList;
-		myGoodsList = sqlSession.selectList(NS+".selectGoodsList", myCartList);
+	public List<ProductDTO> getMyCartList(List<CartDTO> cartlist) {
 		
-		return myGoodsList;
+		return sqlSession.selectList(NS+".getMyCartList", cartlist);
 	}
-
 }

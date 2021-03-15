@@ -18,32 +18,13 @@
 		</selectKey>
 	</insert>
 	
-	<resultMap type="kr.co.domain.CartDTO" id="cartResult">
-		<result property="cartId" column="cartId"/>
-		<result property="userid" column="userId"/>
-		<result property="productId" column="productId"/>
-		<result property="cart_qty" column="cart_qty"/>
-		<result property="regDate" column="regDate"/>
-	</resultMap>
-	
-	<resultMap type="kr.co.domain.ProductDTO" id="productResult">
-		<result property="productId" column="productId"/>
-		<result property="productName" column="productName"/>
-		<result property="price" column="price"/>
-		<result property="stock" column="stock"/>
-		<result property="productDist" column="productDist"/>
-		<result property="productInfo" column="productInfo"/>
-		<result property="filename" column="filename"/>
-	</resultMap>
-	
-	<select id="selectCartList" resultMap="cartResult" parameterType="kr.co.domain.CartDTO">
+	<select id="getMyCartProductId" resultType="kr.co.domain.CartDTO">
 		SELECT * FROM cart WHERE userid = #{userid}
 	</select>
 	
-	<select id="selectGoodsList" resultMap="productResult" parameterType="java.util.Map">
-		SELECT * FROM product
-		WHERE productId = #{productId}
-		<foreach item="item" collection="list" open="(" separator="," close=")">
+	<select id="getMyCartList" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM product WHERE productId IN
+		<foreach collection="list" item="item" open="(" separator="," close=")">
 			#{item.productId}
 		</foreach>
 		ORDER BY regDate DESC

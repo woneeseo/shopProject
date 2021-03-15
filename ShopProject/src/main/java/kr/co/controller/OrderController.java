@@ -10,12 +10,15 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.domain.CartDTO;
+import kr.co.domain.LoginDTO;
 import kr.co.domain.MemberVO;
 import kr.co.domain.ProductDTO;
 import kr.co.service.CartService;
@@ -31,17 +34,12 @@ public class OrderController {
 	@Inject
 	private CartService cartService;
 	
-	@RequestMapping(value = "/mycart/{userid}")
-	public String myCart(@PathVariable("userid") String userid, Model model, HttpSession session) {
+	
+	@RequestMapping(value = "/mycart/{userid}", method = RequestMethod.GET)
+	public String myCart(@PathVariable("userid") String userid, Model model) {
 		
-		List<CartDTO> myCartList = cartService.myCartList(userid);
-		List<ProductDTO> myProductList = cartService.myProductList(myCartList);
-		
-		Map<String, List> cartMap = new HashMap<String, List>();
-		
-		cartMap.put("myCartList", myCartList);
-		cartMap.put("myProductList", myProductList);
-		
+		Map<String, List> cartMap = cartService.getMyCart(userid);
+	
 		model.addAttribute("cartMap", cartMap);
 		
 		return "order/mycart";

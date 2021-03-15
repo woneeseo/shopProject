@@ -230,7 +230,6 @@
 			
 			$(result).each(function() {
 				var data = this; 
-				console.log(data);
 				
 				str += makeHtmlcode_list(data);
 					

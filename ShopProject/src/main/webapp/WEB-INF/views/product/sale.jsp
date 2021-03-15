@@ -90,6 +90,7 @@
 					<c:if test="${login.userid == 'admin'}">
 						<button id="go_to_adminPage">관리자 페이지</button>
 					</c:if>
+					<button id="mycart_btn">장바구니</button>
 					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
@@ -133,6 +134,14 @@
 <script type="text/javascript">
 	
 	$(document).ready(function() {
+		
+		var userid = $("#login_userid").val();
+		
+		$("#mycart_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/order/mycart/" + userid);
+			
+		});
 		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");

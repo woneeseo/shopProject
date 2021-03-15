@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.co.domain.CartDTO;
+import kr.co.domain.ProductDTO;
 
 public interface CartService {
 
@@ -11,6 +12,6 @@ public interface CartService {
 
 	void addGoodsInCart(CartDTO cartDTO);
 
-	Map<String, List> myCartList(CartDTO cartDTO);
+	Map<String, List> getMyCart(String userid);
 
 }

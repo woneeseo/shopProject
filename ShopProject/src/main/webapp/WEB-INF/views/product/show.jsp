@@ -97,6 +97,7 @@
 					<c:if test="${login.userid == 'admin'}">
 						<button id="go_to_adminPage">관리자 페이지</button>
 					</c:if>
+					<button id="mycart_btn">장바구니</button>
 					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
@@ -134,7 +135,7 @@
 	<div class="container" style="width: 70%">
 		
 		<div class="row"><h1 class="page-header" style="text-align: center; margin-bottom: 50px;">${productInfo.productName}</h1>
-			<input type="hidden" value="${productInfo.productId}" id="productId">
+			<input type="hidden" name="productId" value="${productInfo.productId}" id="productId">
 		</div>
 		<div class="row" style="float: left; text-align: center; width:35%;">
 			<img alt="productPhoto" src="/resources/upload${productInfo.filename}" width="150%"">
@@ -267,7 +268,8 @@
 		var productId = $("#productId").val();
 		var userid = $("#login_userid").val();
 		
-		$(".btn-order").click(function() {
+		$(".btn-order").click(function(event) {
+			event.preventDefault();
 			location.assign("/order/insert");
 		});
 		
@@ -284,11 +286,8 @@
 				success : function(result) {
 					
 					if (result.trim() == 'add_success') {
-						var check = confirm("카트에 등록되었습니다.");
-						if (check) {
-							location.assign("/order/mycart/" + userid);
-						}
-
+						alert("카트에 등록되었습니다.");
+		
 					} else if (result.trim() == 'already_existed') {
 						alert("이미 카트에 등록된 상품입니다.");
 					}
@@ -296,7 +295,8 @@
 			});
 		});
 		
-		$(".btn-wishlist").click(function() {
+		$(".btn-wishlist").click(function(event) {
+			event.preventDefault();
 			alert("상품을 위시리스트에 추가하였습니다.");
 		});
 		
@@ -312,6 +312,12 @@
 			});
 			
 			$(".about_product").append(str);
+			
+		});
+		
+		$("#mycart_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/order/mycart/" + userid);
 			
 		});
 		

@@ -32,22 +32,22 @@ public class CartServiceImpl implements CartService{
 	}
 
 	@Override
-	public Map<String, List> myCartList(CartDTO cartDTO) {
+	public Map<String, List> getMyCart(String userid) {
 		
 		Map<String, List> cartMap = new HashMap<String, List>();
 		
-		List<CartDTO> myCartList = cartDAO.selectCartList(cartDTO);
-		
-		if (myCartList.size() == 0) {
+		List<CartDTO> cartList = cartDAO.getMyCartProductId(userid);
+		if (cartList.size() == 0) {
 			return null;
 		}
 		
-		List<ProductDTO> myGoodsList = cartDAO.selectGoodsList(myCartList);
+		List<ProductDTO> productList = cartDAO.getMyCartList(cartList);
 		
-		cartMap.put("myCartList", myCartList);
-		cartMap.put("myGoodsList", myGoodsList);
+		cartMap.put("cartList", cartList);
+		cartMap.put("productList", productList);
 		
- 		return cartMap;
+		return cartMap;
 	}
+
 
 }

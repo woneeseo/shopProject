@@ -77,8 +77,6 @@
 </style>
 </head>
 <body>
-<c:set var="myCartList" value="${cartMap.myCartList}"/>
-<c:set var="myGoodsList" value="${cartMap.myGoodsList}"/>
 
 	<div id="gnb">
 		<a href="/">Hello World</a>
@@ -92,6 +90,7 @@
 					<c:if test="${login.userid == 'admin'}">
 						<button id="go_to_adminPage">관리자 페이지</button>
 					</c:if>
+					<button id="mycart_btn">장바구니</button>
 					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
@@ -104,6 +103,7 @@
 			
 		</div>
 	</div>
+
 
 	<div class="container logo">
 		<a href="/">Hello World</a>
@@ -127,56 +127,73 @@
 	<br>
 	
 	<div class="container">
+	
+	<c:set value="${cartMap.cartlist}" var="cartlist"/>
+	<c:set value="${cartMap.productList}" var="productList"/>
 		
-		<div class="row qnas" style="text-align: center; height: 700px;">
-			<h1 class="page-header">상품 Q&A</h1>
-			<table class="table table-hover" style="width: 70%; margin: auto;">
+		<div class="row qnas" style="text-align: center;">
+			<h1 class="page-header">장바구니</h1>
+			<table class="table table-hover" style="width: 70%; margin: auto; border-bottom: 1px solid #D5D5D5;">
 				<thead>
 					<tr>
-						<th>상품명</th>
-						<th>수량</th>
+						<th colspan="2" style="text-align: center;">상품명</th>
 						<th>가격</th>
+						<th>수량</th>
+						<th>상품정보</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${myGoodsList}" var="vo">
+					<c:choose><c:when test="${productList != null}">
+					<c:forEach items="${productList}" var="vo" varStatus="status">
 						<tr>
-							<td>${vo.productId}</td>
-							<td>${vo.stock}</td>
-							<td>${vo.price}</td>
+							<td><img alt="thumbnail" src="/resources/upload${vo.filename}"></td>
+							<td>${vo.productName}</td>
+							<td><fmt:formatNumber type="number" value="${vo.price}"/>&nbsp;원</td>
+							<td><select>
+								<c:forEach var="count" begin="1" end="${vo.stock > 5 ? 5 : vo.stock}">
+								<option>${count}</option>
+								</c:forEach>
+							</select></td>
+							<td>${vo.productInfo}</td>
 						</tr>
 					</c:forEach>
+					</c:when>
+					<c:otherwise>
+						<tr><td colspan="5"><h3>장바구니에 내역이 없습니다.</h3></td></tr>
+					</c:otherwise></c:choose>
 				</tbody>
 			</table>
 		</div>
+		
+		<div class="row" style="text-align: center; margin: 80px 0;">
+			<button class="btn btn-default">주문하기</button>
+			<button class="btn btn-default btn-back_to_shop">쇼핑을 계속하기</button>
+		</div>
+
 	</div>
 
 <script type="text/javascript">
 	
 	$(document).ready(function() {
 		
+		var userid = $("#login_userid").val();
+		
+		$(".btn-back_to_shop").click(function() {
+			history.back();
+		});
+		
+		
+		$("#mycart_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/order/mycart/" + userid);
+			
+		});	
+		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
 			location.assign("/product/" + productDist);
 		});
 		
-		var productDist = $("li[value='bag']").text().toLowerCase();
-		
-		$.getJSON("/product/get/" + productDist, function(result) {
-			
-			var str = '';
-			
-			$(result).each(function() {
-				var data = this; 
-				console.log(data);
-				
-				str += makeHtmlcode_list(data);
-					
-			});
-			
-			$(".products").html(str);
-			
-		});
 		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();
