@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.domain.LoginDTO;
 import kr.co.domain.MemberVO;
+import kr.co.domain.OrderDTO;
 
 @Repository
 public class MemberDAOImpl implements MemberDAO{
@@ -64,6 +65,11 @@ public class MemberDAOImpl implements MemberDAO{
 	public List<MemberVO> list() {
 		
 		return sqlSession.selectList(NS+".list");
+	}
+
+	@Override
+	public void insertGetPoint(OrderDTO orderDTO) {
+		sqlSession.update(NS+".insertGetPoint", orderDTO);
 	}
 
 }

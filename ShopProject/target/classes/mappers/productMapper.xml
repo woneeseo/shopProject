@@ -52,5 +52,12 @@
 	<select id="getProductDistList" resultType="kr.co.domain.ProductDTO">
 		SELECT * FROM product WHERE productDist = #{productDist} ORDER BY regDate DESC
 	</select>
+	
+	<update id="minusProductStock">
+		UPDATE product SET stock = #{stock} - #{order_Qty} WHERE productId = #{productId}
+	</update>
 
+	<update id="plusSoldRate">
+		UPDATE product SET sold_rate = #{order_Qty} WHERE productId = #{productId}
+	</update>
 </mapper>

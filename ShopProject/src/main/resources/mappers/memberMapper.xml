@@ -29,4 +29,8 @@
 	<select id="list" resultType="kr.co.domain.MemberVO">
 		SELECT * FROM member WHERE userid NOT IN ('admin') ORDER BY regDate DESC
 	</select>
+	
+	<update id="insertGetPoint">
+		UPDATE member SET getPoint = getPoint || #{getPoint} WHERE userid = #{userid}
+	</update>
 </mapper>

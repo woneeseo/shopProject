@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import kr.co.domain.OrderDTO;
 import kr.co.domain.ProductDTO;
 
 @Repository
@@ -84,5 +85,17 @@ public class ProductDAOImpl implements ProductDAO{
 		
 		return sqlSession.selectList(NS+".getProductDistList", productDist);
 	}
+
+	@Override
+	public void minusProductStock(OrderDTO orderDTO) {
+		
+		sqlSession.update(NS+".minusProductStock", orderDTO);
+	}
+
+	@Override
+	public void plusSoldRate(OrderDTO orderDTO) {
+		sqlSession.update(NS+".plusSoldRate", orderDTO);
+	}
+
 
 }

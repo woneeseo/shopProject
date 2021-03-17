@@ -28,12 +28,12 @@ function makeHtmlcode_list(data) {
 	
 	if(checkImgType(name)){
 	
-		var str = `<li><div class="scale col-sm-5 col-md-3"><a class="thumbnail" href="/product/show/${data["productId"]}"><img src="${img}"></a><div class="caption"><h3>${data["productName"]}</h3><h3>${data["price"]}&nbsp;<span>원</span></h3><p><a href="#" class="btn btn-primary" role="button">구입하기</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p></div></li>`;
+		var str = `<li><div class="scale col-sm-5 col-md-3"><a class="thumbnail" href="/product/show/${data["productId"]}"><img src="${img}"></a><div class="caption"><h3>${data["productName"]}</h3><h3>${data["price"]}&nbsp;<span>원</span></h3><p><a href="/product/show/${data["productId"]}" class="btn btn-primary" role="button">구입하기</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p></div></li>`;
 		return str;
 	
 	} else {
 	
-		var str = `<li><div class="scale col-sm-5 col-md-3"><a class="thumbnail" href="/product/show/${data["productId"]}"><img src="${img}"></a><div class="caption"><h3>${data["productName"]}</h3><h3>${data["price"]}&nbsp;<span>원</span></h3><p><a href="#" class="btn btn-primary" role="button">구입하기</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p></div></div></li>`;
+		var str = `<li><div class="scale col-sm-5 col-md-3"><a class="thumbnail" href="/product/show/${data["productId"]}"><img src="${img}"></a><div class="caption"><h3>${data["productName"]}</h3><h3>${data["price"]}&nbsp;<span>원</span></h3><p><a href="/order/insert" class="btn btn-primary" role="button">구입하기</a> <a href="#" class="btn btn-default" role="button">장바구니</a></p></div></div></li>`;
 		return str;	
 		
 	}

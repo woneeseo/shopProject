@@ -13,14 +13,14 @@ public class MemberVO implements Serializable{
 	private int tel;
 	private String birthDate;
 	private String postcode;
+	private int getPoint;
 
 	public MemberVO() {
 		// TODO Auto-generated constructor stub
 	}
-	
 
 	public MemberVO(String userid, String userpw, String username, String useraddress, String email, int tel,
-			String birthDate, String postcode) {
+			String birthDate, String postcode, int getPoint) {
 		super();
 		this.userid = userid;
 		this.userpw = userpw;
@@ -30,6 +30,16 @@ public class MemberVO implements Serializable{
 		this.tel = tel;
 		this.birthDate = birthDate;
 		this.postcode = postcode;
+		this.getPoint = getPoint;
+	}
+
+	
+	public int getGetPoint() {
+		return getPoint;
+	}
+
+	public void setGetPoint(int getPoint) {
+		this.getPoint = getPoint;
 	}
 
 	public String getUserid() {

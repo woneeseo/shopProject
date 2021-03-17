@@ -4,6 +4,7 @@ import java.util.List;
 
 import kr.co.domain.LoginDTO;
 import kr.co.domain.MemberVO;
+import kr.co.domain.OrderDTO;
 
 public interface MemberDAO {
 	
@@ -20,5 +21,7 @@ public interface MemberDAO {
 	MemberVO login(LoginDTO dto);
 
 	List<MemberVO> list();
+
+	void insertGetPoint(OrderDTO orderDTO);
 
 }

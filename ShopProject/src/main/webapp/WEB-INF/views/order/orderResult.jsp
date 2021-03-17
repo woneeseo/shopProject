@@ -22,6 +22,7 @@
  src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 <link href="/resources/css/main.css" rel="stylesheet">
 <script src="/resources/js/upload.js" type="text/javascript"></script>
+ <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <style type="text/css">
 	#text_in_the_image{
 		float: left;
@@ -90,7 +91,7 @@
 					<c:if test="${login.userid == 'admin'}">
 						<button id="go_to_adminPage">관리자 페이지</button>
 					</c:if>
-					<button id="mycart_btn">장바구니</button>
+					<button class="mycart_btn">장바구니</button>
 					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
@@ -126,9 +127,65 @@
 	<br>
 	
 	<div class="container">
+
+		<c:set value="${orderDTO}" var="dto"/>
+		<div class="row" style="text-align: center;">
+			<h1 class="page-header" style="margin-bottom: 50px;">주문이 완료되었습니다.</h1>
+			<table class="table table-hover" style="margin: auto; border-bottom: 1px solid #D5D5D5;">
+				<thead>
+					<tr>
+						<th colspan="2" style="text-align: center !important;">상품명</th>
+						<th>가격</th>
+						<th>수량</th>
+						<th>옵션</th>
+						<th>결제금액</th>
+					</tr>
+				</thead>
+				<tbody style="text-align: left; vertical-align: middle;">
+						<tr>
+							<td style="text-align: center;"><img alt="thumbnail" src="/resources/upload${dto.fullname}" width="30%">
+							<input type="hidden" value="${dto.productId}" name="productId" id="productId">
+							</td>
+							<td>${dto.productName}<br>${dto.productInfo}</td>
+							<td><fmt:formatNumber type="number" value="${dto.price}"/>&nbsp;원</td>
+							<td>${dto.order_Qty}</td>
+							<td>${dto.selected_Opt}</td>
+							<td><fmt:formatNumber type="number" value="${dto.totalAmount}"/>&nbsp;원</td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
 		
-		<div class="row products"></div>
+		<hr>
 		
+		<div class="row" style="text-align: center;">
+			
+			<table class="table table-hover" style="margin: auto; border-bottom: 1px solid #D5D5D5;">
+				<thead>
+					<tr>
+						<th>주문자</th>
+						<th>배송지</th>
+						<th>전화번호</th>
+						<th>배송상태</th>
+						<th>배송메세지</th>
+					</tr>
+				</thead>
+				<tbody style="text-align: left;">
+						<tr>
+							<td>${dto.username}</td>
+							<td>${dto.postcode}<br>${dto.useraddress}</td>
+							<td>${dto.tel}</td>
+							<td id="del_situ"></td>
+							<td>${dto.deliver_msg}</td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="row" style="margin: 80px 0; text-align: center;">
+			<button class="btn btn-default back_btn">쇼핑을 계속하기</button>
+			<button class="btn btn-default mycart_btn">장바구니로 이동하기</button>
+		</div>
 	</div>
 
 <script type="text/javascript">
@@ -136,8 +193,17 @@
 	$(document).ready(function() {
 		
 		var userid = $("#login_userid").val();
+		var productId = $("#productId").val();
+		
+		del_situ();
+		
+		
+		$(".back_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/");
+		});
 
-		$("#mycart_btn").click(function(event) {
+		$(".mycart_btn").click(function(event) {
 			event.preventDefault();
 			location.assign("/order/mycart/" + userid);
 			
@@ -146,24 +212,6 @@
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
 			location.assign("/product/" + productDist);
-		});
-		
-		var productDist = $("li[value='top']").text().toLowerCase();
-		
-		$.getJSON("/product/get/" + productDist, function(result) {
-			
-			var str = '';
-			
-			$(result).each(function() {
-				var data = this; 
-				console.log(data);
-				
-				str += makeHtmlcode_list(data);
-					
-			});
-			
-			$(".products").html(str);
-			
 		});
 		
 		$("#go_to_member_insert").click(function(event) {
@@ -195,6 +243,25 @@
 			location.assign("/admin/main");
 		
 		});
+		
+		$("#searchAdd").click(function(event) {
+			event.preventDefault();
+			postcode();
+
+		});
+	    
+	    function del_situ() {
+	    	var situ = "<c:out value='${dto.deliver_situ}'/>";
+	    	if (situ == '0') {
+				situ = "배송 준비중";
+			} else if (situ == '1') {
+				situ = "배송중";
+			} else if (situ == '2') {
+				situ = "배송 완료";
+			}
+	    	
+	    	$("#del_situ").html(situ);
+		}
 	
 	});
 	

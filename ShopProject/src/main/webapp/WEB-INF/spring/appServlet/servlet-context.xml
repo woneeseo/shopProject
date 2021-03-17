@@ -45,9 +45,10 @@
 	
 	<interceptors>
 		<interceptor>
-			<mapping path="/member/update"/>
-			<mapping path="/member/delete"/>
-			<mapping path="/member/read"/>	
+			<mapping path="/member/update/"/>
+			<mapping path="/member/delete/"/>
+			<mapping path="/member/read/"/>
+			<mapping path="/order/mycart/"/>
 			<beans:ref bean="authinterceptor"/>
 		</interceptor>	
 		<interceptor>

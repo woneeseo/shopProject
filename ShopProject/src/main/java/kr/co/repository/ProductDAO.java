@@ -2,6 +2,7 @@ package kr.co.repository;
 
 import java.util.List;
 
+import kr.co.domain.OrderDTO;
 import kr.co.domain.ProductDTO;
 
 public interface ProductDAO {
@@ -27,5 +28,9 @@ public interface ProductDAO {
 	String getFilename(String productId);
 
 	List<ProductDTO> getProductDistList(String productDist);
+
+	void minusProductStock(OrderDTO orderDTO);
+
+	void plusSoldRate(OrderDTO orderDTO);
 
 }

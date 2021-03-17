@@ -1,6 +1,7 @@
 package kr.co.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import kr.co.domain.LoginDTO;
 import kr.co.domain.MemberVO;
+import kr.co.domain.OrderDTO;
 import kr.co.service.MemberService;
+import kr.co.service.OrderService;
 
 @Controller
 @RequestMapping(value = "/member")
@@ -27,6 +30,9 @@ public class MemberController {
 	
 	@Inject
 	private MemberService memberService;
+	
+	@Inject
+	private OrderService orderService;
 	
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -116,7 +122,9 @@ public class MemberController {
 	public String read(@PathVariable("userid") String userid, Model model) {
 		
 		MemberVO vo = memberService.read(userid);
+		List<OrderDTO> orderList = orderService.myOrderList(userid);
 		model.addAttribute("userInfo", vo);
+		model.addAttribute("orderList", orderList);
 
 		return "member/read";
 	}

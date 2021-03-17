@@ -13,6 +13,8 @@ SELECT * FROM MEMBER
 DROP table member
 
 ALTER TABLE member ADD useraddress VARCHAR2(100)
+ALTER TABLE member ADD getPoint NUMBER(8)
+
 
 SELECT * FROM member WHERE userid = 'm003'
 
@@ -38,6 +40,8 @@ INSERT INTO PRODUCT (productId, productName, price) VALUES ('test_product_id5', 
 ALTER TABLE product ADD fullname VARCHAR2(200)
 
 ALTER TABLE product DROP COLUMN filename
+ALTER TABLE product ADD sold_rate NUMBER(10)
+
 
 DELETE FROM product
 
@@ -81,3 +85,47 @@ SELECT * from cart
 
 SELECT * FROM cart WHERE userid = 'm002'
 
+
+CREATE TABLE setOrder(
+	orderId VARCHAR2(40),
+	order_seq_num NUMBER(8),
+	productId VARCHAR2(100),
+	productName VARCHAR2(300),
+	price NUMBER(10),
+	order_Qty NUMBER(2),
+	productDist VARCHAR2(30),
+	productInfo VARCHAR2(100),
+	selected_Opt VARCHAR2(100),
+	fullname VARCHAR2(200),
+	userid VARCHAR2(50),
+	username VARCHAR2(30),
+	email VARCHAR2(100),
+	tel NUMBER(11),
+	useraddress VARCHAR2(100),
+	postcode VARCHAR2(20),
+	orderDate DATE DEFAULT SYSDATE,
+	deliver_msg VARCHAR2(300),
+	deliver_situ NUMBER(2),
+	totalAmount NUMBER(8),
+	billingDate DATE DEFAULT SYSDATE,
+	cal_info VARCHAR2(20)
+)
+
+ALTER TABLE setOrder ADD CONSTRAINT setOrder_fk_userid FOREIGN KEY (userid) REFERENCES member(userid)
+ALTER TABLE setOrder ADD CONSTRAINT setOrder_fk_productId FOREIGN KEY (productId) REFERENCES product(productId)
+ALTER TABLE setOrder ADD stock NUMBER(4)
+
+SELECT * FROM SETORDER
+
+
+ALTER TABLE setOrder ADD cal_info VARCHAR2(20)
+
+DELETE from setOrder
+
+CREATE SEQUENCE order_seq_num 
+START WITH 4000
+INCREMENT BY 1
+MAXVALUE 10000000
+NOCYCLE
+
+UPDATE setOrder SET deliver_situ = 1 WHERE order_seq_num = 4021

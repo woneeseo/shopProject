@@ -17,6 +17,7 @@ public class ProductDTO implements Serializable{
 	private Date updateDate;
 	private String[] files;
 	private String fullname;
+	private int sold_rate;
 	
 	
 	public ProductDTO() {
@@ -45,6 +46,22 @@ public class ProductDTO implements Serializable{
 		this.productDist = productDist;
 		this.productInfo = productInfo;
 		this.files = files;
+	}
+
+	public ProductDTO(String productId, String productName, int price, int stock, String productDist,
+			String productInfo, Date regDate, Date updateDate, String[] files, String fullname, int sold_rate) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.price = price;
+		this.stock = stock;
+		this.productDist = productDist;
+		this.productInfo = productInfo;
+		this.regDate = regDate;
+		this.updateDate = updateDate;
+		this.files = files;
+		this.fullname = fullname;
+		this.sold_rate = sold_rate;
 	}
 
 	public String[] getFiles() {
@@ -129,6 +146,14 @@ public class ProductDTO implements Serializable{
 
 	public void setFilename(String filename) {
 		this.fullname = filename;
+	}
+
+	public int getSold_rate() {
+		return sold_rate;
+	}
+
+	public void setSold_rate(int sold_rate) {
+		this.sold_rate = sold_rate;
 	}
 
 	@Override

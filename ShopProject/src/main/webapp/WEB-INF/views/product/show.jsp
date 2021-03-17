@@ -133,12 +133,12 @@
 	<br>
 	
 	<div class="container" style="width: 70%">
-		
+		<form action="/order/insert" method="post">
 		<div class="row"><h1 class="page-header" style="text-align: center; margin-bottom: 50px;">${productInfo.productName}</h1>
 			<input type="hidden" name="productId" value="${productInfo.productId}" id="productId">
 		</div>
 		<div class="row" style="float: left; text-align: center; width:35%;">
-			<img alt="productPhoto" src="/resources/upload${productInfo.filename}" width="150%"">
+			<img alt="productPhoto" src="/resources/upload${productInfo.filename}" width="150%">
 		</div>
 
 		<div class="row productInfo" style="width: 40%; float: right;" >
@@ -154,14 +154,15 @@
 				<p>도서산간지역 배송비 5000원 / 3만원 이상 결제시 무료배송</p>
 			</div>
 			<div class="form-group" style="text-align: left;">
-				<label>적립금 : </label><span><fmt:parseNumber var="test" value="${productInfo.price / 100}" integerOnly="true"/> ${test}&nbsp;원</span>
+				<label>적립금 : </label><span><fmt:parseNumber var="test" value="${productInfo.price / 100}" integerOnly="true"/> ${test}&nbsp;원
+				<input value="${test}" type="hidden" name="getPoint" id="point"></span>
 			</div>
 
 			<c:choose>
 				<c:when test="${productInfo.productDist != 'acc' && productInfo.productDist != 'bag'}">
 					<div class="form-horizontal" style="text-align: left;">
 						<label>옵션 : </label> 
-						<select class="form-control opt_select" name="selectedOpt">
+						<select class="form-control opt_select" name="selected_Opt">
 							<option value="S">S</option>
 							<option value="M">M</option>
 							<option value="L">L</option>
@@ -172,10 +173,17 @@
 			</c:choose>		
 			<div class="form-horizontal" style="text-align: left;">
 				<label>구매수량 : </label> 
-				<select class="form-control" id="select_count">
-				<c:forEach begin="1" end="${productInfo.stock > 5 ? 5 : productInfo.stock}" var="count">
-					<option>${count}</option></c:forEach>
-				</select>
+				<c:choose>
+					<c:when test="${productInfo.stock == 0}">
+						<span>품절된 상품입니다.</span>
+					</c:when>
+					<c:otherwise>
+						<select class="form-control" id="select_count" name="order_Qty">
+						<c:forEach begin="1" end="${productInfo.stock > 5 ? 5 : productInfo.stock}" var="count">
+						<option value="${count}">${count}</option></c:forEach>
+						</select>					
+					</c:otherwise>
+				</c:choose>
 			</div>	
 			<hr>
 			
@@ -183,13 +191,22 @@
 				<div class="selected_option" style="text-align: right;">
 				</div>
 				<div style="text-align: center;">
-					<button class="btn btn-default btn-order">주문하기</button>
-					<button class="btn btn-default btn-cart">장바구니</button>
-					<button class="btn btn-default btn-wishlist">위시리스트</button>
+				<c:choose>
+					<c:when test="${productInfo.stock == 0}">
+						<button class="btn btn-default btn-order" disabled="disabled">주문하기</button>
+						<button class="btn btn-default btn-cart" disabled="disabled">장바구니</button>
+					</c:when>
+					<c:otherwise>
+						<button class="btn btn-default btn-order" type="submit">주문하기</button>
+						<button class="btn btn-default btn-car">장바구니</button>					
+					</c:otherwise>
+				</c:choose>
+
 				</div>
 			</div>
-			<hr>	
+			<hr>		
 		</div>
+		</form>
 	</div>
 
 	<div class="container">
@@ -268,36 +285,58 @@
 		var productId = $("#productId").val();
 		var userid = $("#login_userid").val();
 		
-		$(".btn-order").click(function(event) {
+		$(".btn-car").click(function(event) {
 			event.preventDefault();
-			location.assign("/order/insert");
-		});
-		
-		$(".btn-cart").click(function() {
+			var qty = $("#select_count").val();
+			var price = "<c:out value='${test}'/>";
 			
-			$.ajax({
-				
-				type : "post",
-				url : "/order/cart/" + productId,
-				data : {
-					productId : productId
-				},
-				dataType : "text",
-				success : function(result) {
-					
-					if (result.trim() == 'add_success') {
-						alert("카트에 등록되었습니다.");
-		
-					} else if (result.trim() == 'already_existed') {
-						alert("이미 카트에 등록된 상품입니다.");
-					}
-				}
-			});
+			var point = Number(price) * Number(qty);
+			$("#point").val(point);
+
 		});
 		
-		$(".btn-wishlist").click(function(event) {
+		$(".btn-order").click(function(event) {
+			
 			event.preventDefault();
-			alert("상품을 위시리스트에 추가하였습니다.");
+			if (userid == null) {
+				alert("로그인이 필요합니다.");
+				location.assign("/member/login");
+			} else {
+				$("form").submit();
+			}
+			
+		});
+		
+		$(".btn-cart").click(function(event) {
+			
+			event.preventDefault();
+			
+			if (userid == null) {
+				alert("로그인이 필요합니다.");
+				location.assign("/member/login");
+				
+			} else {
+				
+				$.ajax({
+					
+					type : "post",
+					url : "/order/cart/" + productId,
+					data : {
+						productId : productId
+					},
+					dataType : "text",
+					success : function(result) {
+						
+						if (result.trim() == 'add_success') {
+							alert("카트에 등록되었습니다.");
+			
+						} else if (result.trim() == 'already_existed') {
+							alert("이미 카트에 등록된 상품입니다.");
+						}
+					}
+				});
+			}
+
 		});
 		
 		$.getJSON("/admin/product/getAttaches/" + productId, function(result) {
@@ -366,7 +405,6 @@
 			str += '<label>배송비 : </label><span>&nbsp;' + shipping + '</span>&nbsp;&nbsp;&nbsp;';
 			str	+= '<label>가격 : </label><span>&nbsp;' + price + ' 원</span></p>';
 			str += '<h4><label>결제금액 : </label><span>&nbsp;' + finalPrice + ' 원</span></h4>'; 
-			str += '<span class="glyphicon glyphicon-exclamation-remove"></span>';
 			
 			$(".selected_option").html(str);
 			console.log(opt);

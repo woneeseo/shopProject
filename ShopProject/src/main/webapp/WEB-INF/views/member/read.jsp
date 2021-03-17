@@ -59,16 +59,16 @@
 	</div>
 
 	<div class="nav">
-		<nav>
+		<nav id="top_nav">
 			<ul class="nav nav-tabs nav-justified">
-				<li>ABOUT</li>
-				<li>OUTER</li>
-				<li>TOP</li>
-				<li>BOTTOM</li>
-				<li>BAG</li>
-				<li>ACC</li>
-				<li>SALE</li>
-				<li>EVENT</li>
+				<li value="about">ABOUT</li>
+				<li value="outer">OUTER</li>
+				<li value="top">TOP</li>
+				<li value="bottom">BOTTOM</li>
+				<li value="bag">BAG</li>
+				<li value="acc">ACC</li>
+				<li value="sale">SALE</li>
+				<li value="event">EVENT</li>
 			</ul>
 		</nav>
 	</div>
@@ -116,20 +116,100 @@
 					<div class="col-sm-10">
 						<input class="form-control" id="birthDate"  name="birthDate" value="${userInfo.birthDate}" readonly>
 					</div>
-				</div>				
+				</div>
 				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
+					<label for="inputBirth" class="col-sm-2 control-label">Point</label>
+					<div class="col-sm-10">
+						<input class="form-control" id="getPoint"  name="getPoint" value="${userInfo.getPoint}" readonly>
+						<label>5,000p 부터 현금처럼 사용할 수 있습니다.</label>
+					</div>
+				</div>				
+				<div class="row">
+					<div class="form-group" style="text-align: center; margin-top: 50px;">
 						<button class="btn btn-default" id="update_userInfo">회원정보 수정</button>
 						<button class="btn btn-default" id="back_to_main">메인으로 돌아가기</button>
 						<button class="btn btn-default" id=drop_out_of_member>회원 탈퇴하기</button>
 					</div>
+				</div>				
+
+				<div class="form-group">
+					<div class="row" style="text-align: center;">
+						<h1 class="page-header" style="margin-bottom: 50px;">나의 주문 내역</h1>
+						<table class="table table-hover"
+							style="margin: auto; border-bottom: 1px solid #D5D5D5;">
+							<thead>
+								<tr>
+									<th colspan="2" style="text-align: center;">상품명</th>
+									<th>가격</th>
+									<th>수량</th>
+									<th>옵션</th>
+									<th>결제금액</th>
+									<th>결제일</th>
+									<th>배송현황</th>
+								</tr>
+							</thead>
+							<tbody style="text-align: left;">
+								<c:choose>
+									<c:when test="${orderList == null}">
+										<tr style="text-align: center;"><td colspan="8"><h3>주문 내역이 없습니다.</h3></td></tr>
+									</c:when>
+									<c:otherwise>
+										<c:forEach items="${orderList}" var="dto">
+											<tr>
+												<td style="text-align: center;"><img alt="thumbnail"
+													src="/resources/upload${dto.fullname}" width="40%"> <input
+													type="hidden" value="${dto.productId}" name="productId"
+													id="productId"></td>
+												<td>${dto.productName}<br>${dto.productInfo}</td>
+												<td><fmt:formatNumber type="number"
+														value="${dto.price}" />&nbsp;원</td>
+												<td>${dto.order_Qty}</td>
+												<td>${dto.selected_Opt}</td>
+												<td><fmt:formatNumber type="number"
+														value="${dto.totalAmount}" />&nbsp;원</td>
+												<td><fmt:formatDate value="${dto.billingDate}"
+														type="date" pattern="yyyy-MM-dd" /></td>
+												<td>${dto.deliver_situ == 0 ? "배송준비중" : 
+															dto.deliver_situ == 1 ? "배송중" : "배송완료"}</td>
+												<c:choose>
+													<c:when test="${dto.deliver_situ != 0}">
+														<td>
+															<button class="btn btn-default disable"
+																disabled="disabled">주문취소</button>
+															<br>
+															<button class="btn btn-default disable"
+																disabled="disabled">주문변경</button>
+															<br>
+														</td>
+													</c:when>
+													<c:otherwise>
+														<td>
+															<button class="btn btn-default order_cancel"
+																onclick="location.href='/order/cancel/'+ ${dto.orderId}">주문취소</button>
+															<br>
+															<button class="btn btn-default">주문변경</button>
+														</td>
+													</c:otherwise>
+												</c:choose>
+											</tr>
+										</c:forEach>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table>
+					</div>
 				</div>
+
 			</div>
 		</div><!-- class=row -->
 	</div><!-- class=container -->
 <script type="text/javascript">
 	$(document).ready(function () {
 		
+		$("#top_nav ul li").on('click', function() {
+			var productDist = $(this).attr("value");
+			location.assign("/product/" + productDist);
+		});
 		
 		$("#drop_out_of_member").click(function(event) {
 			event.preventDefault();
