@@ -75,3 +75,16 @@
 	
 	color: white;
 }
+
+.footer{
+	
+	height: 400px; 
+	background-color: #474749; 
+	margin-top: 100px;
+	text-align: center;
+}
+
+.footer p{
+	padding-top: 50px;
+	color: white;
+}

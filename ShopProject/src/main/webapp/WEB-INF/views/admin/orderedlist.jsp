@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Top</title>
+<title>주문 현황</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -21,8 +21,6 @@
 <script
  src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
 <link href="/resources/css/main.css" rel="stylesheet">
-<script src="/resources/js/upload.js" type="text/javascript"></script>
- <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <style type="text/css">
 	#text_in_the_image{
 		float: left;
@@ -57,23 +55,21 @@
 		text-shadow: 3px 4px 5px gray;
 	}
 	
-	.container{
-		margin-top: 50px;
-	}
-	
-	.products li{
-		list-style: none;
-	}
-	
-	.products li .scale{
+	.side_nav{
+		width: 15% !important;
+		margin-top: 10px;
+		float: left;
+		margin-right: 20px;
 		text-align: center;
-		font-family: '나눔명조 Bold';
 	}
 	
-	.nav li{
-		cursor: pointer;
+		
+	.admin_container{
+		float: right;
+		width: 80%;
+		margin-right: 30px;
 	}
-
+	
 	
 </style>
 </head>
@@ -91,7 +87,6 @@
 					<c:if test="${login.userid == 'admin'}">
 						<button id="go_to_adminPage">관리자 페이지</button>
 					</c:if>
-					<button class="mycart_btn">장바구니</button>
 					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
@@ -101,7 +96,6 @@
 					<button onclick="location.href='/member/login'">로그인</button><button onclick="location.href='/member/insert'">회원가입</button>
 				</c:otherwise>
 			</c:choose>	
-			
 		</div>
 	</div>
 
@@ -126,93 +120,64 @@
 	
 	<br>
 	
-	<div class="container">
+	
+	
+	<div class="row side_nav">
+		<ul class="nav nav-pills nav-stacked">
+			<li class="li_btns active"><a href="/admin/orderedlist">주문 현황</a></li>
+			<li class="li_btns"><a href="/admin/list">회원 관리</a></li>
+			<li class="li_btns"><a href="/admin/product/insert">상품 등록</a></li>
+			<li class="li_btns"><a href="/admin/product/list">상품 조회</a></li>
+		</ul>
+	</div>
 
-		<c:set value="${orderDTO}" var="dto"/>
-		<div class="row" style="text-align: center;">
-			<h1 class="page-header" style="margin-bottom: 50px;">주문이 완료되었습니다.</h1>
-			<table class="table table-hover" style="margin: auto; border-bottom: 1px solid #D5D5D5;">
+	<div class="container admin_container">
+		<div class="row">
+			<h1 class="jumbotron" style="text-align: center; margin: 50px 0;">주문 현황</h1>
+			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th colspan="2" style="text-align: center !important;">상품명</th>
-						<th>가격</th>
-						<th>수량</th>
-						<th>옵션</th>
+						<th>주문ID</th>
+						<th>주문자ID</th>
+						<th>주문자명</th>
 						<th>결제금액</th>
+						<th>주문량</th>
+						<th>상품옵션</th>
+						<th>결제일</th>
+						<th>주문일</th>
+						<th>배송현황</th>
 					</tr>
 				</thead>
-				<tbody style="text-align: left; vertical-align: middle;">
+				<tbody>
+					<c:forEach items="${orderedList}" var="dto">
 						<tr>
-							<td style="text-align: center;"><img alt="thumbnail" src="/resources/upload${dto.fullname}" width="30%">
-							<input type="hidden" value="${dto.productId}" name="productId" id="productId">
-							</td>
-							<td>${dto.productName}<br>${dto.productInfo}</td>
-							<td><fmt:formatNumber type="number" value="${dto.price}"/>&nbsp;원</td>
+							<td><a href="/admin/aboutOrder/${dto.orderId}">${dto.orderId}</a></td>
+							<td>${dto.userid}</td>
+							<td>${dto.username}</td>
+							<td>${dto.totalAmount}</td>
 							<td>${dto.order_Qty}</td>
 							<td>${dto.selected_Opt}</td>
-							<td><fmt:formatNumber type="number" value="${dto.totalAmount}"/>&nbsp;원</td>
+							<td><fmt:formatDate value="${dto.billingDate}" pattern="yyyy-MM-dd" type="date"/></td>
+							<td><fmt:formatDate value="${dto.orderDate}" pattern="yyyy-MM-dd" type="date"/></td>
+							<td>${dto.deliver_situ == 0 ? "배송준비중" : 
+															dto.deliver_situ == 1 ? "배송중" : "배송완료"}</td>
 						</tr>
+					</c:forEach>
 				</tbody>
 			</table>
 		</div>
-		
-		<hr>
-		
-		<div class="row" style="text-align: center;">
-			
-			<table class="table table-hover" style="margin: auto; border-bottom: 1px solid #D5D5D5;">
-				<thead>
-					<tr>
-						<th>주문자</th>
-						<th>배송지</th>
-						<th>전화번호</th>
-						<th>배송상태</th>
-						<th>배송메세지</th>
-					</tr>
-				</thead>
-				<tbody style="text-align: left;">
-						<tr>
-							<td>${dto.username}</td>
-							<td>${dto.postcode}<br>${dto.useraddress}</td>
-							<td>${dto.tel}</td>
-							<td id="del_situ"></td>
-							<td>${dto.deliver_msg}</td>
-						</tr>
-				</tbody>
-			</table>
-		</div>
-		
-		<div class="row" style="margin: 80px 0; text-align: center;">
-			<button class="btn btn-default back_btn">쇼핑을 계속하기</button>
-			<button class="btn btn-default mycart_btn">장바구니로 이동하기</button>
-		</div>
+		<!-- class = row -->
 	</div>
 
 <script type="text/javascript">
 	
 	$(document).ready(function() {
 		
-		var userid = $("#login_userid").val();
-		var productId = $("#productId").val();
-		
-		del_situ();
-		
-		
-		$(".back_btn").click(function(event) {
-			event.preventDefault();
-			location.assign("/");
-		});
-
-		$(".mycart_btn").click(function(event) {
-			event.preventDefault();
-			location.assign("/order/mycart/" + userid);
-			
-		});
-		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
 			location.assign("/product/" + productDist);
 		});
+
 		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();
@@ -244,24 +209,6 @@
 		
 		});
 		
-		$("#searchAdd").click(function(event) {
-			event.preventDefault();
-			postcode();
-
-		});
-	    
-	    function del_situ() {
-	    	var situ = "<c:out value='${dto.deliver_situ}'/>";
-	    	if (situ == '0') {
-				situ = "배송 준비중";
-			} else if (situ == '1') {
-				situ = "배송중";
-			} else if (situ == '2') {
-				situ = "배송 완료";
-			}
-	    	
-	    	$("#del_situ").html(situ);
-		}
 	
 	});
 	

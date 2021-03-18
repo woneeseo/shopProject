@@ -22,5 +22,18 @@
 	<select id="myOrderList" resultType="kr.co.domain.OrderDTO">
 		SELECT * FROM setOrder WHERE userid = #{userid}
 	</select>
+	
+	<select id="list" resultType="kr.co.domain.OrderDTO">
+		SELECT * FROM setOrder ORDER BY orderDate DESC
+	</select>
+	
+	<select id="selectByOrderId" resultType="kr.co.domain.OrderDTO">
+		SELECT * FROM setOrder WHERE orderId = #{orderId} ORDER BY orderDate DESC
+	</select>
+	
+	<update id="updateDelSitu">
+		UPDATE setOrder SET deliver_situ = #{deliver_situ} 
+		WHERE orderId = #{orderId} AND order_seq_num = #{order_seq_num}
+	</update>
 
 </mapper>

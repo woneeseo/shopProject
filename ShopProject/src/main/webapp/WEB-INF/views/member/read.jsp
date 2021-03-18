@@ -34,18 +34,25 @@
 </head>
 <body>
 
+
 	<div id="gnb">
-	<a href="/">Hello World</a>
+		<a href="/">Hello World</a>
 		<div  class="text-right" >
 			<c:choose>
 				<c:when test="${login.userid != null}">
 					<span class="glyphicon glyphicon-heart-empty" style="color: white;" aria-hidden="true"></span>
 					<span id="login_log" style="border-bottom: 1px solid white;">${login.userid} 님, 환영합니다.</span>
 					<span class="glyphicon glyphicon-heart-empty" style="color: white;" aria-hidden="true"></span>
-					&nbsp;&nbsp;&nbsp;&nbsp;<button id="mypage_btn">마이페이지</button>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<c:if test="${login.userid == 'admin'}">
+						<button id="go_to_adminPage">관리자 페이지</button>
+					</c:if>
+					<button id="mycart_btn">장바구니</button>
+					<button id="mypage_btn">마이페이지</button>
 					<button id="logout_btn">로그아웃</button>
 					<input type="hidden" value="${login.userid}" id="login_userid">
 				</c:when>
+				
 				<c:otherwise>
 					<button onclick="location.href='/member/login'">로그인</button><button onclick="location.href='/member/insert'">회원가입</button>
 				</c:otherwise>
@@ -206,6 +213,12 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		
+		$("#mycart_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/order/mycart/" + userid);
+			
+		});	
+		
 		$("#top_nav ul li").on('click', function() {
 			var productDist = $(this).attr("value");
 			location.assign("/product/" + productDist);
@@ -248,6 +261,13 @@
 			if (logout) {
 				location.assign("/member/logout");
 			} 
+		});
+		
+		$("#go_to_adminPage").click(function(event) {
+			event.preventDefault();
+			
+			location.assign("/admin/orderedlist");
+		
 		});
 		
 	});

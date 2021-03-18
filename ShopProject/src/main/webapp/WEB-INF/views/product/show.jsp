@@ -441,7 +441,7 @@
 		$("#go_to_adminPage").click(function(event) {
 			event.preventDefault();
 			
-			location.assign("/admin/main");
+			location.assign("/admin/orderedlist");
 		
 		});
 	

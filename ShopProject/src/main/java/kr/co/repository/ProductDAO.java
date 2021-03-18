@@ -33,4 +33,8 @@ public interface ProductDAO {
 
 	void plusSoldRate(OrderDTO orderDTO);
 
+	List<ProductDTO> newProductList();
+
+	List<ProductDTO> productList();
+
 }

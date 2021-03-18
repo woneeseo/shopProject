@@ -10,4 +10,10 @@ public interface OrderDAO {
 
 	List<OrderDTO> myOrderList(String userid);
 
+	List<OrderDTO> list();
+
+	List<OrderDTO> selectByOrderId(String orderId);
+
+	boolean updateDelSitu(OrderDTO orderDTO);
+
 }

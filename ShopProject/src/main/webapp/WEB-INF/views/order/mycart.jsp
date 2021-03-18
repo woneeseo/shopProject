@@ -75,6 +75,33 @@
 
 	
 </style>
+
+<script type="text/javascript">
+function itemSum(){
+    var str = "";
+    var sum = 0;
+    var count = $(".chkbox").length;
+    for(var i=0; i < count; i++ ){
+        if( $(".chkbox")[i].checked == true ){
+         sum += parseInt($(".chkbox")[i].value);
+        }
+    }
+    $("#total_sum").html(sum+" 원");
+    $("#amount").val(sum);
+ }
+
+$("#allCheck").click(function(){
+var chk = $("#allCheck").prop("checked");
+if(chk) {
+    $(".chkbox").prop("checked", true);
+        itemSum();
+} else {
+     $(".chkbox").prop("checked", false);
+    itemSum();
+}
+});
+
+</script>
 </head>
 <body>
 
@@ -127,13 +154,12 @@
 	<br>
 	
 	<div class="container">
-	
 	<c:set value="${cartMap.cartlist}" var="cartlist"/>
 	<c:set value="${cartMap.productList}" var="productList"/>
 		
 		<div class="row qnas" style="text-align: center;">
 			<h1 class="page-header">장바구니</h1>
-			<table class="table table-hover" style="width: 70%; margin: auto; border-bottom: 1px solid #D5D5D5;">
+			<table class="table table-hover" style="width: 80%; margin: auto; border-bottom: 1px solid #D5D5D5;">
 				<thead>
 					<tr>
 						<th colspan="2" style="text-align: center;">상품명</th>
@@ -146,14 +172,25 @@
 					<c:choose><c:when test="${productList != null}">
 					<c:forEach items="${productList}" var="vo" varStatus="status">
 						<tr>
-							<td><img alt="thumbnail" src="/resources/upload${vo.filename}"></td>
+							<td class="product-close">
+							<input type="checkbox" class="chkbox" onClick="itemSum()"
+							 value="" data-cartNum="${vo.productId}" checked style="margin-right: 30px;">
+							<img alt="thumbnail" src="/resources/upload${vo.filename}"></td>
 							<td>${vo.productName}</td>
 							<td><fmt:formatNumber type="number" value="${vo.price}"/>&nbsp;원</td>
-							<td><select>
-								<c:forEach var="count" begin="1" end="${vo.stock > 5 ? 5 : vo.stock}">
-								<option>${count}</option>
-								</c:forEach>
-							</select></td>
+								<td><c:choose>
+										<c:when test="${vo.stock == 0}">
+											<span>품절된 상품입니다.</span>
+										</c:when>
+										<c:otherwise>
+											<select class="form-control">
+												<c:forEach var="count" begin="1" end="${vo.stock > 5 ? 5 : vo.stock}">
+													<option>${count}</option>
+												</c:forEach>
+											</select>
+										</c:otherwise>
+									</c:choose>
+								</td>
 							<td>${vo.productInfo}</td>
 						</tr>
 					</c:forEach>
@@ -166,10 +203,13 @@
 		</div>
 		
 		<div class="row" style="text-align: center; margin: 80px 0;">
-			<button class="btn btn-default">주문하기</button>
+			<button class="btn btn-default" type="submit" id="orderSuccess">선택한 상품 주문하기</button>
 			<button class="btn btn-default btn-back_to_shop">쇼핑을 계속하기</button>
 		</div>
-
+		<form action="/order/cartOrder" method="post">
+			<input type="hidden" value="" name="productId">
+			<input type="hidden" value="" name="order_Qty">
+		</form>
 	</div>
 
 <script type="text/javascript">
@@ -177,6 +217,21 @@
 	$(document).ready(function() {
 		
 		var userid = $("#login_userid").val();
+		
+		 $("#orderSuccess").click(function () {
+             var checkArr = new Array();
+             $("input[class='chkbox']:checked").each(function () {
+                 checkArr.push($(this).attr("data-cartNum"));
+             });
+
+             $("#chk").val(checkArr);
+
+            if (confirm("주문완료 하시겠습니까?")) {
+                 alert("주문 감사합니다.");
+                 $("#orderForm").submit();
+                console.log(checkArr);
+             }
+         });
 		
 		$(".btn-back_to_shop").click(function() {
 			history.back();
@@ -221,7 +276,7 @@
 		$("#go_to_adminPage").click(function(event) {
 			event.preventDefault();
 			
-			location.assign("/admin/main");
+			location.assign("/admin/orderedlist");
 		
 		});
 	

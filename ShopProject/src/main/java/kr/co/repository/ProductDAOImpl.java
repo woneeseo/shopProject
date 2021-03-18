@@ -97,5 +97,17 @@ public class ProductDAOImpl implements ProductDAO{
 		sqlSession.update(NS+".plusSoldRate", orderDTO);
 	}
 
+	@Override
+	public List<ProductDTO> newProductList() {
+		
+		return sqlSession.selectList(NS+".newProductList");
+	}
+
+	@Override
+	public List<ProductDTO> productList() {
+		
+		return sqlSession.selectList(NS+".productList");
+	}
+
 
 }

@@ -137,6 +137,7 @@
 						<th>상품명</th>
 						<th>가격</th>
 						<th>재고</th>
+						<th>판매량</th>
 						<th>상품 구분</th>
 						<th>상품 정보</th>
 						<th>상품 등록일</th>
@@ -151,6 +152,7 @@
 							<td>${dto.productName}</td>
 							<td>${dto.price}</td>
 							<td>${dto.stock}</td>
+							<td>${dto.sold_rate}</td>
 							<td>${dto.productDist}</td>
 							<td>${dto.productInfo}</td>
 							<td><fmt:formatDate value="${dto.regDate}" pattern="yyyy-MM-dd" type="date"/></td>
@@ -213,7 +215,7 @@
 		$("#go_to_adminPage").click(function(event) {
 			event.preventDefault();
 			
-			location.assign("/admin/main");
+			location.assign("/admin/orderedlist");
 		
 		});
 		

@@ -129,3 +129,8 @@ MAXVALUE 10000000
 NOCYCLE
 
 UPDATE setOrder SET deliver_situ = 1 WHERE order_seq_num = 4021
+
+SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate 
+		FROM (SELECT * FROM product ORDER BY regDate DESC)) WHERE rnum <= 8
+SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate 
+		FROM (SELECT * FROM product ORDER BY sold_rate DESC)) WHERE rnum <= 8

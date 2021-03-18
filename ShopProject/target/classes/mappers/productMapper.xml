@@ -5,6 +5,11 @@
 <mapper namespace="kr.co.product">
 
 	<select id="list" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate 
+		FROM (SELECT * FROM product ORDER BY sold_rate ASC)) WHERE rnum  <![CDATA[ <= ]]> 12
+	</select>
+	
+	<select id="productList" resultType="kr.co.domain.ProductDTO">
 		SELECT * FROM product ORDER BY regDate DESC
 	</select>
 	
@@ -60,4 +65,9 @@
 	<update id="plusSoldRate">
 		UPDATE product SET sold_rate = #{order_Qty} WHERE productId = #{productId}
 	</update>
+	
+	<select id="newProductList" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate 
+		FROM (SELECT * FROM product ORDER BY regDate DESC)) WHERE rnum  <![CDATA[ <= ]]> 12
+	</select>
 </mapper>

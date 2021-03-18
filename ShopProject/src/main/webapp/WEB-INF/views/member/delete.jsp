@@ -180,6 +180,13 @@
 				location.assign("/member/read/" + userid);
 			}
 		});
+		
+		$("#go_to_adminPage").click(function(event) {
+			event.preventDefault();
+			
+			location.assign("/admin/orderedlist");
+		
+		});
 
 	});
 </script>

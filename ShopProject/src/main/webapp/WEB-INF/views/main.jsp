@@ -60,11 +60,11 @@
 		margin-top: 50px;
 	}
 	
-	.products li{
+	.products li, .products_new li{
 		list-style: none;
 	}
 	
-	.products li .scale{
+	.products li .scale, .products_new li .scale{
 		text-align: center;
 		font-family: '나눔명조 Bold';
 	}
@@ -152,6 +152,12 @@
 		</div>
 		
 	</div>
+	
+	<hr>
+	
+	<div class="footer">
+		<p>@copyright cookie run</p>
+	</div>
 
 <script type="text/javascript">
 	
@@ -186,6 +192,21 @@
 			
 		});
 		
+		$.getJSON("/admin/newProducts", function(result) {
+			
+			var str = '';
+			
+			$(result).each(function() {
+				var data = this;
+				
+				str += makeHtmlcode_list(data);
+					
+			});
+			
+			$(".products_new").html(str);
+			
+		});
+		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();
 			
@@ -212,7 +233,7 @@
 		$("#go_to_adminPage").click(function(event) {
 			event.preventDefault();
 			
-			location.assign("/admin/main");
+			location.assign("/admin/orderedlist");
 		
 		});
 	

@@ -139,6 +139,13 @@
 				location.assign("/member/logout");
 			}
 		});
+		
+		$("#go_to_adminPage").click(function(event) {
+			event.preventDefault();
+			
+			location.assign("/admin/orderedlist");
+		
+		});
 
 	});
 	

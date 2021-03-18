@@ -23,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import kr.co.domain.MemberVO;
+import kr.co.domain.OrderDTO;
 import kr.co.domain.ProductDTO;
 import kr.co.service.MemberService;
+import kr.co.service.OrderService;
 import kr.co.service.ProductService;
 import kr.co.util.FileUploadDownloadUtils;
 import kr.co.util.MediaUtils;
@@ -39,6 +41,46 @@ public class AdminController {
 	@Inject
 	private ProductService productService;
 	
+	@Inject
+	private OrderService orderService;
+	
+	@ResponseBody
+	@RequestMapping(value = "/updateDelSitu", method = RequestMethod.POST)
+	public int updateDelSitu(OrderDTO orderDTO) {
+		
+		boolean result = orderService.updateDelSitu(orderDTO);
+		
+		if (result) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	@RequestMapping(value = "/aboutOrder/{orderId}", method = RequestMethod.GET)
+	public String aboutOrder(@PathVariable("orderId") String orderId, Model model) {
+		
+		List<OrderDTO> list = orderService.selectByOrderId(orderId);
+		model.addAttribute("list", list);
+
+		return "admin/aboutOrder";
+	}
+	
+	@RequestMapping(value = "/orderedlist", method = RequestMethod.GET)
+	public void orderedlist(Model model) {
+		
+		List<OrderDTO> orderedList = orderService.list();
+		model.addAttribute("orderedList", orderedList);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/newProducts", method = RequestMethod.GET)
+	public List<ProductDTO> newProducts() {
+		
+		List<ProductDTO> list = productService.newProductList();
+		
+		return list;
+	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/productList", method = RequestMethod.GET)
@@ -165,7 +207,7 @@ public class AdminController {
 	@RequestMapping(value = "/product/list", method = RequestMethod.GET)
 	public String productList(Model model) {
 		
-		List<ProductDTO> list = productService.list();
+		List<ProductDTO> list = productService.productList();
 		model.addAttribute("productList", list);
 		
 		StringBuffer sb = new StringBuffer();
@@ -178,14 +220,6 @@ public class AdminController {
 		return path;
 		
 	}
-	
-	
-	@RequestMapping(value = "/main", method = RequestMethod.GET)
-	public String main() {
-		
-		return "admin/main";
-	}
-	
 	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public void list(Model model) {

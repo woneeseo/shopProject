@@ -24,4 +24,8 @@ public interface ProductService {
 
 	List<ProductDTO> getProductDistList(String productDist);
 
+	List<ProductDTO> newProductList();
+
+	List<ProductDTO> productList();
+
 }

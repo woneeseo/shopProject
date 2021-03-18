@@ -41,4 +41,25 @@ public class OrderServiceImpl implements OrderService{
 		return orderDAO.myOrderList(userid);
 	}
 
+
+	@Override
+	public List<OrderDTO> list() {
+		
+		return orderDAO.list();
+	}
+
+
+	@Override
+	public List<OrderDTO> selectByOrderId(String orderId) {
+		
+		return orderDAO.selectByOrderId(orderId);
+	}
+
+	@Override
+	public boolean updateDelSitu(OrderDTO orderDTO) {
+		
+		boolean result = orderDAO.updateDelSitu(orderDTO);
+		return result;
+	}
+
 }

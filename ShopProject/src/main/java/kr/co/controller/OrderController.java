@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.domain.CartDTO;
@@ -40,6 +41,19 @@ public class OrderController {
 	
 	@Inject
 	private OrderService orderService;
+	
+	@RequestMapping(value = "/cartOrder", method = RequestMethod.POST)
+	public void orderAllCartProduct(HttpSession session, OrderDTO orderDTO, 
+			@RequestParam(value = "chd[]") List<String> myCartList) {
+		MemberVO vo = (MemberVO) session.getAttribute("login");
+		String userid = vo.getUserid();
+		
+		System.out.println(myCartList);
+		System.out.println(userid);
+		
+		
+		
+	}
 	
 	@RequestMapping(value = "/orderResult", method = RequestMethod.POST)
 	public String order(ProductDTO productDTO, MemberVO vo, Model model,

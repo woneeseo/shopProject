@@ -98,4 +98,16 @@ public class ProductServiceImpl implements ProductService{
 		return productDAO.getProductDistList(productDist);
 	}
 
+	@Override
+	public List<ProductDTO> newProductList() {
+		
+		return productDAO.newProductList();
+	}
+
+	@Override
+	public List<ProductDTO> productList() {
+	
+		return productDAO.productList();
+	}
+
 }

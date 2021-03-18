@@ -145,7 +145,7 @@
 				<tbody>
 					<c:forEach items="${list}" var="vo">
 						<tr>
-							<td>${vo.userid}</td>
+							<td><a href="/member/read/${vo.userid}">${vo.userid}</a></td>
 							<td>${vo.username}</td>
 							<td>${vo.email}</td>
 							<td>${vo.tel}</td>
@@ -210,7 +210,7 @@
 		$("#go_to_adminPage").click(function(event) {
 			event.preventDefault();
 			
-			location.assign("/admin/main");
+			location.assign("/admin/orderedlist");
 		
 		});
 		
