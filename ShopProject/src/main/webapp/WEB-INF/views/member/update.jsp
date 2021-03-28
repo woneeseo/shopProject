@@ -61,18 +61,15 @@
 	<div class="container logo">
 		<a href="/">Hello World</a>
 	</div>
-
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li>ABOUT</li>
-				<li>OUTER</li>
-				<li>TOP</li>
-				<li>BOTTOM</li>
-				<li>BAG</li>
-				<li>ACC</li>
-				<li>SALE</li>
-				<li>EVENT</li>
+				<li value="outer">OUTER</li>
+				<li value="top">TOP</li>
+				<li value="bottom">BOTTOM</li>
+				<li value="bag">BAG</li>
+				<li value="acc">ACC</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -183,6 +180,17 @@
 			
 			location.assign("/admin/orderedlist");
 		
+		});
+		
+		
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 		
 	    //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.

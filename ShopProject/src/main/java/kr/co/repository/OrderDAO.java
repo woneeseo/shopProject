@@ -2,6 +2,7 @@ package kr.co.repository;
 
 import java.util.List;
 
+import kr.co.domain.CartDTO;
 import kr.co.domain.OrderDTO;
 
 public interface OrderDAO {
@@ -10,10 +11,16 @@ public interface OrderDAO {
 
 	List<OrderDTO> myOrderList(String userid);
 
-	List<OrderDTO> list();
+	List<OrderDTO> list(int curPage);
 
 	List<OrderDTO> selectByOrderId(String orderId);
 
 	boolean updateDelSitu(OrderDTO orderDTO);
+
+	boolean delFromCart(CartDTO cartDTO);
+
+	int orderCancel(OrderDTO orderDTO);
+
+	int getAmount();
 
 }

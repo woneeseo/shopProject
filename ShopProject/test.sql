@@ -10,11 +10,14 @@ CREATE TABLE member(
 
 SELECT * FROM MEMBER
 
+SELECT SUM(getPoint) FROM member WHERE userid = 'm002'
+
 DROP table member
 
 ALTER TABLE member ADD useraddress VARCHAR2(100)
 ALTER TABLE member ADD getPoint NUMBER(8)
 
+UPDATE MEMBER SET getPoint = 330 WHERE userid = 'm001'
 
 SELECT * FROM member WHERE userid = 'm003'
 
@@ -42,8 +45,10 @@ ALTER TABLE product ADD fullname VARCHAR2(200)
 ALTER TABLE product DROP COLUMN filename
 ALTER TABLE product ADD sold_rate NUMBER(10)
 
+SELECT COUNT(productId) FROM PRODUCT
 
-DELETE FROM product
+DELETE FROM product WHERE productName LIKE '[쿠키]%' 
+SELECT * FROM product ORDER BY sold_rate DESC
 
 CREATE TABLE attach(
 	id NUMBER(8) PRIMARY KEY,
@@ -83,7 +88,7 @@ ALTER TABLE cart ADD CONSTRAINT cart_fk_productId FOREIGN KEY (productId) REFERE
 
 SELECT * from cart
 
-SELECT * FROM cart WHERE userid = 'm002'
+DELETE FROM cart
 
 
 CREATE TABLE setOrder(
@@ -115,7 +120,7 @@ ALTER TABLE setOrder ADD CONSTRAINT setOrder_fk_userid FOREIGN KEY (userid) REFE
 ALTER TABLE setOrder ADD CONSTRAINT setOrder_fk_productId FOREIGN KEY (productId) REFERENCES product(productId)
 ALTER TABLE setOrder ADD stock NUMBER(4)
 
-SELECT * FROM SETORDER
+SELECT * FROM SETORDER WHERE userid = 'm002'
 
 
 ALTER TABLE setOrder ADD cal_info VARCHAR2(20)
@@ -134,3 +139,46 @@ SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, product
 		FROM (SELECT * FROM product ORDER BY regDate DESC)) WHERE rnum <= 8
 SELECT * FROM (SELECT ROWNUM rnum, productId, productName, price, stock, productDist, productInfo, fullname, regDate, updateDate 
 		FROM (SELECT * FROM product ORDER BY sold_rate DESC)) WHERE rnum <= 8
+		
+		
+CREATE TABLE qna(
+	boardId NUMBER(4) PRIMARY KEY,
+	userid VARCHAR2(50),
+	title VARCHAR2(500),
+	regDate DATE DEFAULT SYSDATE,
+	content VARCHAR2(1000),
+	updateDate DATE DEFAULT SYSDATE,
+	viewCnt NUMBER(4),
+	productName VARCHAR2(300)
+)
+
+ALTER TABLE qna ADD CONSTRAINT qna_fk_productId FOREIGN KEY(productId) REFERENCES product(productId)
+ALTER TABLE qna ADD	CONSTRAINT qna_fk_userid FOREIGN KEY(userid) REFERENCES member(userid)
+ALTER TABLE qna ADD qna_type NUMBER(4)
+
+ALTER TABLE qna ADD productName VARCHAR2(300)
+ALTER TABLE qna ADD replyCnt NUMBER(4)
+
+UPDATE qna SET productName = '[팬츠] 스키니진' WHERE boardId > 10 AND boardId < 30 
+
+SELECT * FROM qna
+
+ALTER TABLE qna DROP COLUMN productId
+
+SELECT * FROM QNA ORDER BY regDate DESC
+SELECT ROWNUM rnum, boardId, userid, title, regDate, qna_type, viewCnt FROM (SELECT * FROM qna ORDER BY regDate DESC)
+SELECT * FROM (SELECT ROWNUM rnum, boardId, userid, title, regDate, qna_type, viewCnt 
+FROM (SELECT * FROM qna ORDER BY regDate DESC)) WHERE qna_type = 3 
+DELETE FROM qna
+
+CREATE TABLE reply(
+	rep_no NUMBER PRIMARY KEY,
+	boardId NUMBER NOT NULL, 
+	rep_content VARCHAR2(1000) NOT NULL,
+	writer VARCHAR2(30) NOT NULL,
+	regDate DATE DEFAULT SYSDATE,
+	updateDate DATE DEFAULT SYSDATE,
+	
+	CONSTRAINT reply_fk_boardId FOREIGN KEY(boardId) REFERENCES qna(boardId)
+	ON DELETE CASCADE
+)

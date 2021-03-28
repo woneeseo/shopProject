@@ -39,16 +39,16 @@ public class test {
 		// System.out.println(vo.getBirth());
 	}
 	
-	@Test
-	public void testProductList() {
-		
-		List<ProductDTO> list = pDao.list();
-		for (int i = 0; i < list.size(); i++) {
-			
-			ProductDTO dto = list.get(i);
-			System.out.println(dto.getProductId());
-		}
-	}
+//	@Test
+//	public void testProductList() {
+//		
+//		//List<ProductDTO> list = pDao.list();
+//		for (int i = 0; i < list.size(); i++) {
+//			
+//			ProductDTO dto = list.get(i);
+//			System.out.println(dto.getProductId());
+//		}
+//	}
 	
 	@Test
 	public void testProductRead() {

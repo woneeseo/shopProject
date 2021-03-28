@@ -112,18 +112,15 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
-	
 	<br>
 	
 	<div class="container">
@@ -148,8 +145,7 @@
 							</td>
 							<td>${dto.productName}<br>${dto.productInfo}</td>
 							<td><label id="totalPrice"></label>&nbsp;원<br>
-								적립금 : <label id="point"></label>원
-								<input type="hidden" name="getPoint" id="getPoint"></td>
+								적립금 : <label id="point"></label>원								
 							<td><select name="order_Qty" class="form-control order_Qty">
 								<c:forEach begin="1" end="${dto.stock > 5 ? 5 : dto.stock}" var="stock">
 									<option value="${stock}">${stock}</option>
@@ -179,6 +175,7 @@
 		<c:set value="${memberInfo}" var="vo"/>
 			<h1 class="page-header">주문정보 확인</h1>
 			<h4 style="color: red;">주문자 정보와 배송지가 다른 경우 직접 입력해주세요.</h4>
+			<input type="hidden" value="${vo.getPoint}" name="getPoint" id="getPoint">
 		</div>
 		<div class="row">
 			<div class="form-horizontal">
@@ -261,7 +258,7 @@
 		
 		$(".confirm").click(function(event) {
 			event.preventDefault();
-			var point =  "<c:out value='${getPoint}'/>";
+			var point = "<c:out value='${getPoint}'/>";
 			var price = "<c:out value='${dto.price}'/>";
 			var qty = $(".order_Qty").val();
 			
@@ -270,7 +267,6 @@
 			
 			$("#totalPrice").html(totalPrice);
 			$("#point").html(totalPoint);
-			$("#getPoint").val(totalPoint);
 			
 		});
 		
@@ -279,11 +275,16 @@
 			var qty = $(".order_Qty").val();
 			var price = "<c:out value='${dto.price}'/>";
 			var del_fee = "<c:out value='${del_fee}'/>";
-			var point =  "<c:out value='${getPoint}'/>";
+			var point = $("#point").html();
+			var bPoint = $("#getPoint").val();
 			
+			var p = parseInt(point);
+			var b = parseInt(bPoint);
+
 			var amount = price * qty;
-			
-			if (amount < 30000) {	
+			var totalPoint = p + b;
+
+   			if (amount < 30000) {	
 				totalAmount = Number(amount) + Number(del_fee);
 				$("#price").html(amount);
 				$("#del_fee").html(del_fee);
@@ -297,7 +298,7 @@
 				$("#amount").val(totalAmount);
 			}
 			
-			$("#point").html(point);
+   			$("#getPoint").val(totalPoint);
 
 		});
 		
@@ -314,7 +315,12 @@
 		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 		
 		$("#go_to_member_insert").click(function(event) {

@@ -31,6 +31,26 @@
 	</select>
 	
 	<update id="insertGetPoint">
-		UPDATE member SET getPoint = getPoint || #{getPoint} WHERE userid = #{userid}
+		UPDATE member SET getPoint = #{getPoint} WHERE userid = #{userid}
 	</update>
+	
+	<select id="findIdByNameAndEmail" resultType="kr.co.domain.MemberVO">
+		SELECT * FROM member WHERE username = #{username} AND email = #{email}
+	</select>
+	
+	<select id="findPwByNameAndEmail" resultType="kr.co.domain.MemberVO">
+		SELECT * FROM member WHERE username = #{username} AND email = #{email} AND userid = #{userid}
+	</select>
+	
+	<update id="deleteGetPoint">
+		UPDATE member SET getPoint = getPoint - #{getPoint} WHERE userid = #{userid}
+	</update>
+	
+	<select id="getAmount" resultType="integer">
+		SELECT COUNT(userid) FROM member
+	</select>
+	
+	<delete id="memberDelete">
+		DELETE FROM member WHERE userid = #{userid}
+	</delete>
 </mapper>

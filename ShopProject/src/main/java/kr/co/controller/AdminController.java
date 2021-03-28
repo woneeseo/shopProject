@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,12 +23,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import kr.co.domain.BoardDTO;
 import kr.co.domain.MemberVO;
 import kr.co.domain.OrderDTO;
+import kr.co.domain.PageTO;
 import kr.co.domain.ProductDTO;
+import kr.co.domain.SearchPageTO;
 import kr.co.service.MemberService;
 import kr.co.service.OrderService;
 import kr.co.service.ProductService;
+import kr.co.service.SBoardService;
 import kr.co.util.FileUploadDownloadUtils;
 import kr.co.util.MediaUtils;
 
@@ -43,6 +48,18 @@ public class AdminController {
 	
 	@Inject
 	private OrderService orderService;
+	
+	@Inject
+	private SBoardService sBoardService;
+	
+	@ResponseBody
+	@RequestMapping(value = "/memberDelete/{userid}", method = RequestMethod.POST)
+	public int memberDelete(@PathVariable("userid") String userid) {
+		
+		int result = memberService.memberDelete(userid);	
+
+		return result;
+	}
 	
 	@ResponseBody
 	@RequestMapping(value = "/updateDelSitu", method = RequestMethod.POST)
@@ -66,11 +83,49 @@ public class AdminController {
 		return "admin/aboutOrder";
 	}
 	
-	@RequestMapping(value = "/orderedlist", method = RequestMethod.GET)
-	public void orderedlist(Model model) {
+	@RequestMapping(value = "/orderedlist/{curPage}", method = RequestMethod.GET)
+	public String orderedlist(Model model, @PathVariable("curPage") String sCurPage) {
+
+		int curPage = 1;
+
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+
+		PageTO<OrderDTO> to = new PageTO<OrderDTO>(curPage);
+		int amount = orderService.getAmount();
+		to.setAmount(amount);
+		List<OrderDTO> list = orderService.list(curPage);
+
+		model.addAttribute("list", list);
+		to.setList(list);
+
+		model.addAttribute("to", to);
 		
-		List<OrderDTO> orderedList = orderService.list();
-		model.addAttribute("orderedList", orderedList);
+		return "admin/orderedlist";
+	}
+
+	@RequestMapping(value = "/orderedlist", method = RequestMethod.GET)
+	public String orderedlist(Model model) {
+
+		int curPage = 1;
+
+		List<OrderDTO> list = orderService.list(curPage);
+
+		int amount = orderService.getAmount();
+		PageTO<OrderDTO> to = new PageTO<OrderDTO>(curPage);
+		to.setAmount(amount);
+		to.setList(list);
+
+		model.addAttribute("to", to);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("/admin");
+		sb.append("/orderedlist");
+		
+		String path = sb.toString();
+
+		return path;
 	}
 	
 	@ResponseBody
@@ -86,28 +141,28 @@ public class AdminController {
 	@RequestMapping(value = "/productList", method = RequestMethod.GET)
 	public List<ProductDTO> productList() {
 		
-		List<ProductDTO> list = productService.list();
+		int curPage = 1;
+		List<ProductDTO> list = productService.list(curPage);
+		int amount = productService.getAmount();
 		
-		return list;
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
+		to.setAmount(amount);
+		to.setList(list);
+
+		return to.getList();
 	}
 	
 	
 	@RequestMapping(value = "/product/insert", method = RequestMethod.POST)
 	public String insert(ProductDTO dto) {
 		
-		System.out.println(dto.getPrice());
-		System.out.println(dto.getProductDist());
-		System.out.println(dto.getProductId());
-		System.out.println(dto.getProductInfo());
-		System.out.println(dto.getProductName());
-		System.out.println(dto.getStock());
-		System.out.println(dto.getFiles());
 		
 		String[] files = dto.getFiles();
 		String filename = files[0];
 		System.out.println(filename);
 		dto.setFilename(filename);
 		
+
 		productService.insert(dto);
 		
 		StringBuffer sb = new StringBuffer();
@@ -203,12 +258,61 @@ public class AdminController {
 		return path;
 	}
 	
-	
-	@RequestMapping(value = "/product/list", method = RequestMethod.GET)
-	public String productList(Model model) {
+	@RequestMapping(value = "/product/list/{searchType}/{keyword}/{curPage}", method = RequestMethod.GET)
+	public String productlist(@PathVariable("searchType") String searchType, @PathVariable("keyword") String keyword,
+			@PathVariable("curPage") int curPage, Model model) {
+
+		SearchPageTO<ProductDTO> spt = new SearchPageTO<ProductDTO>(searchType, keyword, curPage);
+		Integer amount = sBoardService.getProductAmount(spt);
+
+		if (amount == null) {
+			amount = 0;
+		}
+
+		spt.setAmount(amount);
+
+		List<ProductDTO> list = sBoardService.searchProductList(spt);
+		spt.setList(list);
+		model.addAttribute("spt", spt);
+
+		return "admin/product/searchlist";
+	}
+
+	@RequestMapping(value = "/product/list/{curPage}", method = RequestMethod.GET)
+	public String productlist(Model model, @PathVariable("curPage") String sCurPage) {
+
+		int curPage = 1;
+
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
+		int amount = productService.getAmount();
+		to.setAmount(amount);
+		List<ProductDTO> list = productService.productList(curPage);
+
+		model.addAttribute("list", list);
+		to.setList(list);
+
+		model.addAttribute("to", to);
 		
-		List<ProductDTO> list = productService.productList();
-		model.addAttribute("productList", list);
+		return "admin/product/list";
+	}
+
+	@RequestMapping(value = "/product/list", method = RequestMethod.GET)
+	public String productlist(Model model) {
+
+		int curPage = 1;
+
+		List<ProductDTO> list = productService.productList(curPage);
+
+		int amount = productService.getAmount();
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
+		to.setAmount(amount);
+		to.setList(list);
+
+		model.addAttribute("to", to);
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append("/admin");
@@ -218,14 +322,51 @@ public class AdminController {
 		String path = sb.toString();
 
 		return path;
-		
 	}
 	
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public void list(Model model) {
-		
-		List<MemberVO> list = memberService.list();
+	@RequestMapping(value = "/list/{curPage}", method = RequestMethod.GET)
+	public String memberList(Model model, @PathVariable("curPage") String sCurPage) {
+
+		int curPage = 1;
+
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+
+		PageTO<MemberVO> to = new PageTO<MemberVO>(curPage);
+		int amount = memberService.getAmount();
+		to.setAmount(amount);
+		List<MemberVO> list = memberService.list(curPage);
+
 		model.addAttribute("list", list);
+		to.setList(list);
+
+		model.addAttribute("to", to);
+		
+		return "admin/list";
+	}
+
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public String memberList(Model model) {
+
+		int curPage = 1;
+
+		List<MemberVO> list = memberService.list(curPage);
+
+		int amount = memberService.getAmount();
+		PageTO<MemberVO> to = new PageTO<MemberVO>(curPage);
+		to.setAmount(amount);
+		to.setList(list);
+
+		model.addAttribute("to", to);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("/admin");
+		sb.append("/list");
+		
+		String path = sb.toString();
+
+		return path;
 	}
 
 }

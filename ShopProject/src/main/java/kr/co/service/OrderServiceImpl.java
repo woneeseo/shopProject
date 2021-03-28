@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.domain.CartDTO;
 import kr.co.domain.OrderDTO;
+import kr.co.repository.CartDAO;
 import kr.co.repository.MemberDAO;
 import kr.co.repository.OrderDAO;
 import kr.co.repository.ProductDAO;
@@ -23,6 +25,7 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Inject
 	private MemberDAO memberDAO;
+
 	
 	@Override
 	@Transactional
@@ -32,6 +35,13 @@ public class OrderServiceImpl implements OrderService{
 		productDAO.minusProductStock(orderDTO);
 		productDAO.plusSoldRate(orderDTO);
 		memberDAO.insertGetPoint(orderDTO);
+		
+		CartDTO cartDTO = new CartDTO();
+		cartDTO.setUserid(orderDTO.getUserid());
+		cartDTO.setProductId(orderDTO.getProductId());
+		
+		delFromCart(cartDTO);
+		
 	}
 
 
@@ -43,9 +53,9 @@ public class OrderServiceImpl implements OrderService{
 
 
 	@Override
-	public List<OrderDTO> list() {
+	public List<OrderDTO> list(int curPage) {
 		
-		return orderDAO.list();
+		return orderDAO.list(curPage);
 	}
 
 
@@ -60,6 +70,30 @@ public class OrderServiceImpl implements OrderService{
 		
 		boolean result = orderDAO.updateDelSitu(orderDTO);
 		return result;
+	}
+
+
+	@Override
+	public boolean delFromCart(CartDTO cartDTO) {
+		
+		return orderDAO.delFromCart(cartDTO);
+	}
+
+
+	@Override
+	public int orderCancel(OrderDTO orderDTO) {
+		
+		productDAO.plusProductStock(orderDTO);
+		productDAO.minusSoldRate(orderDTO);
+		memberDAO.deleteGetPoint(orderDTO);
+		return orderDAO.orderCancel(orderDTO);
+	}
+
+
+	@Override
+	public int getAmount() {
+		
+		return orderDAO.getAmount();
 	}
 
 }

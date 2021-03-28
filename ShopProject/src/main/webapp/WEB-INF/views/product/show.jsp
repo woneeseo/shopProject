@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>About</title>
+<title>Shop</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -114,22 +114,18 @@
 	<div class="container logo">
 		<a href="/">Hello World</a>
 	</div>
-
 	<div class="nav">
 		<nav id="top_nav">
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
-	
 	<br>
 	
 	<div class="container" style="width: 70%">
@@ -198,7 +194,7 @@
 					</c:when>
 					<c:otherwise>
 						<button class="btn btn-default btn-order" type="submit">주문하기</button>
-						<button class="btn btn-default btn-car">장바구니</button>					
+						<button class="btn btn-default btn-cart">장바구니</button>					
 					</c:otherwise>
 				</c:choose>
 
@@ -215,65 +211,54 @@
 				<ul class="nav nav-tabs nav-justified">
 					<li id="about">상품상세</li>
 					<li id="review">리뷰</li>
-					<li id="qna">상품문의</li>
 				</ul>
 			</nav>
 		</div>
-		
+
 		<div class="row" style="margin: 50px 0;">
 			<h1 class="jumbotron">
 				<div class="container">
-					<h1>Hello world</h1>
+					<h1>상품 상세 페이지 입니다.</h1>
 					<small>This is product page.</small>
 				</div>
 			</h1>
 		</div>
-		
-		<div class="row about_product" style="text-align: center; height: auto;">
+
+		<div class="row about_product"
+			style="text-align: center; height: auto;">
 			<h1 class="page-header">상품 상세</h1>
 
 		</div>
-		<div class="row reviews" style="text-align: center; margin: 80px 0;">
-			<h1 class="page-header" style="margin-bottom: 50px;">Review</h1>
-			<c:forEach begin="1" end="5">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">Panel title</h3>
-				</div>
-				<div class="panel-body">Panel content</div>
-			</div>
-			</c:forEach>
-		</div>
 
-		<div class="row qnas" style="text-align: center; height: 700px;">
-			<h1 class="page-header">상품 Q&A</h1>
-			<table class="table table-hover" style="width: 70%; margin: auto;">
+		<div class="row reviews" style="margin-top: 100px;">
+			<h1 class="page-header">Review&nbsp;&nbsp;<small>상품을 사용해보신 분들의 실제 후기입니다.</small></h1>
+			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th>회원ID</th>
-						<th>이름</th>
-						<th>Email</th>
-						<th>전화번호</th>
-						<th>주소</th>
-						<th>생일</th>
+						<th>No.</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회수</th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach items="${list}" var="vo">
 						<tr>
+							<td>${vo.boardId}</td>
+							<td><a href="/board/read/${vo.boardId}">${vo.title}</a></td>
 							<td>${vo.userid}</td>
-							<td>${vo.username}</td>
-							<td>${vo.email}</td>
-							<td>${vo.tel}</td>
-							<td>${vo.useraddress}</td>
-							<td>${vo.birthDate}</td>
+							<td><fmt:formatDate value="${vo.regDate}" type="date"
+									pattern="yyyy-MM-dd" /></td>
+							<td>${vo.viewCnt}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
 		</div>
+
 	</div>
-	
+
 	<hr>
 	
 	<div class="footer"></div>
@@ -285,7 +270,7 @@
 		var productId = $("#productId").val();
 		var userid = $("#login_userid").val();
 		
-		$(".btn-car").click(function(event) {
+		$(".btn-cart").click(function(event) {
 			event.preventDefault();
 			var qty = $("#select_count").val();
 			var price = "<c:out value='${test}'/>";
@@ -366,12 +351,6 @@
 			$("html").animate({scrollTop: scrollPosition}, 500); 
 		});
 		
-		$("#qna").click(function() {
-		
-			var scrollPosition = $(".qnas").offset().top;
-			$("html").animate({scrollTop: scrollPosition}, 500); 
-		});
-		
 		$("#about").click(function() {
 			
 			var scrollPosition = $(".about_product").offset().top;
@@ -408,11 +387,18 @@
 			
 			$(".selected_option").html(str);
 			console.log(opt);
-		});
+		});		
 		
 		$("#top_nav ul li").on('click', function() {
+
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}
+			
 		});
 		
 		$("#go_to_member_insert").click(function(event) {

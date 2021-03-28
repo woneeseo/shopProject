@@ -18,18 +18,20 @@ public class ProductServiceImpl implements ProductService{
 	private ProductDAO productDAO;
 
 	@Override
-	public List<ProductDTO> list() {
+	public List<ProductDTO> list(int curPage) {
 	
-		return productDAO.list();
+		return productDAO.list(curPage);
 	}
 
 	@Override
 	public ProductDTO read(String productId) {
 		
-		String filename = productDAO.getFilename(productId);
-		ProductDTO dto = productDAO.read(productId);
-		dto.setFilename(filename);
+		ProductDTO dto = null;
 		
+		String filename = productDAO.getFilename(productId);
+		dto = productDAO.read(productId);
+		dto.setFilename(filename);
+
 		return dto;
 	}
 
@@ -105,9 +107,15 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public List<ProductDTO> productList() {
+	public List<ProductDTO> productList(int curPage) {
 	
-		return productDAO.productList();
+		return productDAO.productList(curPage);
+	}
+
+	@Override
+	public int getAmount() {
+		
+		return productDAO.getAmount();
 	}
 
 }

@@ -20,6 +20,14 @@ public interface MemberService {
 
 	MemberVO login(LoginDTO dto);
 
-	List<MemberVO> list();
+	List<MemberVO> list(int curPage);
+
+	MemberVO findIdByNameAndEmail(MemberVO vo);
+
+	MemberVO findPwByNameAndEmail(MemberVO vo);
+
+	int getAmount();
+
+	int memberDelete(String userid);
 
 }

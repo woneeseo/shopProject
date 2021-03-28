@@ -104,18 +104,15 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
-	
 	<br>
 	
 	
@@ -140,10 +137,11 @@
 						<th>전화번호</th>
 						<th>주소</th>
 						<th>생일</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${list}" var="vo">
+					<c:forEach items="${to.list}" var="vo">
 						<tr>
 							<td><a href="/member/read/${vo.userid}">${vo.userid}</a></td>
 							<td>${vo.username}</td>
@@ -151,38 +149,83 @@
 							<td>${vo.tel}</td>
 							<td>${vo.useraddress}</td>
 							<td>${vo.birthDate}</td>
+							<td>
+								<button class="btn btn-default del_member" data-Id="${vo.userid}">회원 삭제</button>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
 		</div>
 		<!-- class = row -->
+		<div class="row">
+			<nav aria-label="Page navigation">
+				<ul class="pagination">
+				
+					<li><c:if test="${to.curPage > 1}">
+					<a href="/admin/list/${to.curPage <= 1 ? 1 : to.curPage-1}" aria-label="Previous"> 
+					<span aria-hidden="true">
+					&laquo;</span></a></c:if></li>
+					<!--  << -->
+					<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
+						<li class="${to.curPage == idx ? 'active' : ''}"><a href="/admin/list/${idx}">${idx}</a></li>
+						<!-- 현재 페이지와 idx페이지가 같은 경우에만 class값을 부여해 활성화 된 것 처럼 표현해 줄 수 있다. -->
+						<!-- curPage와 idx가 같니? 그렇다면 class에는 active값을 부여해주고, 아니면 그냥 빈칸으로 둬라. -->
+					</c:forEach>
+
+					<li><c:if test="${to.curPage < to.totalPage}">
+					<a href="/admin/list/${to.curPage >= to.totalPage ? to.totalPage : to.curPage+1}" aria-label="Next">
+					<!-- 삼항연산자를 사용해 curPage가 totalPage보다 크면 totalPage값을 가질 수 있도록 설정해줌 -->
+					<span aria-hidden="true">
+					&raquo;</span></a></c:if></li>
+					<!-- >> -->
+				</ul>
+			</nav>
+
+		</div>		
 	</div>
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
 		
+		$(".del_member").click(function() {
+			var item = $(this);
+			var userid = item.attr("data-Id");
+			var isOk = confirm("회원을 삭제합니다.");
+			
+			if (isOk) {
+				$.ajax({
+					
+					type : 'post',
+					url : '/admin/memberDelete/' + userid,
+					data : {
+						userid : userid
+					},
+					dataType : 'text',
+					success : function(result) {
+						if (result == 1) {
+							alert("회원 삭제가 완료되었습니다.");
+							location.assign("/admin/list");
+						} else {
+							alert("회원 삭제에 실패하였습니다.");
+						}
+					}
+					
+				});
+				
+			}
+		});
 		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
-		
-		$.getJSON("/admin/productList", function(result) {
-			
-			var str = '';
-			
-			$(result).each(function() {
-				var data = this; 
-				console.log(data);
-				
-				str += makeHtmlcode_list(data);
-					
-			});
-			
-			$(".products").html(str);
-			
-		});
+
 		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();

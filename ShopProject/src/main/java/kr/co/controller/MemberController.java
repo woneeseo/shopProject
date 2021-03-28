@@ -34,6 +34,32 @@ public class MemberController {
 	@Inject
 	private OrderService orderService;
 	
+	
+	@ResponseBody
+	@RequestMapping(value = "/findPw", method = RequestMethod.POST)
+	public String findPw(MemberVO vo) {
+		
+		vo = memberService.findPwByNameAndEmail(vo);
+		if (vo != null) {
+			return vo.getUserpw();
+		} else {
+			return null;
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/findId", method = RequestMethod.POST)
+	public String findId(MemberVO vo) {
+		
+		vo = memberService.findIdByNameAndEmail(vo);
+		if (vo != null) {
+			return vo.getUserid();
+		} else {
+			return null;
+		}
+	}
+	
+	
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
@@ -49,11 +75,20 @@ public class MemberController {
 		
 	}
 	
+	@ResponseBody
 	@RequestMapping(value = "/loginPost", method = RequestMethod.POST) 
-	public void loginPost(LoginDTO dto, Model model) {
+	public boolean loginPost(LoginDTO dto, HttpSession session) {
 		
 		MemberVO vo = memberService.login(dto);
-		model.addAttribute("login", vo);
+		
+		boolean result = true;
+		if (vo != null) {
+			session.setAttribute("login", vo);
+			return result;
+		} else {
+			result = false;
+			return result;
+		}
 	}
 	
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)

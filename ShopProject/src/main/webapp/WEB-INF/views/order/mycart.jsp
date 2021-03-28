@@ -139,14 +139,12 @@ if(chk) {
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -154,17 +152,24 @@ if(chk) {
 	<br>
 	
 	<div class="container">
-	<c:set value="${cartMap.cartlist}" var="cartlist"/>
+
+	<c:set value="${cartMap.cartList}" var="cartList"/>
 	<c:set value="${cartMap.productList}" var="productList"/>
+	
+	<c:forEach items="${cartList}" var="cList">
+		<input type="hidden" value="${cList.cartId}" name="cartId">
+	</c:forEach>
 		
 		<div class="row qnas" style="text-align: center;">
+		<form action="/order/cartOrder" method="post" id="orderForm">
 			<h1 class="page-header">장바구니</h1>
-			<table class="table table-hover" style="width: 80%; margin: auto; border-bottom: 1px solid #D5D5D5;">
+			<table class="table table-hover" style="margin: auto; border-bottom: 1px solid #D5D5D5;">
 				<thead>
 					<tr>
 						<th colspan="2" style="text-align: center;">상품명</th>
 						<th>가격</th>
 						<th>수량</th>
+						<th>옵션</th>
 						<th>상품정보</th>
 					</tr>
 				</thead>
@@ -173,25 +178,56 @@ if(chk) {
 					<c:forEach items="${productList}" var="vo" varStatus="status">
 						<tr>
 							<td class="product-close">
-							<input type="checkbox" class="chkbox" onClick="itemSum()"
+							<input type="checkbox" class="chkbox" onClick="itemSum()" 
 							 value="" data-cartNum="${vo.productId}" checked style="margin-right: 30px;">
-							<img alt="thumbnail" src="/resources/upload${vo.filename}"></td>
-							<td>${vo.productName}</td>
-							<td><fmt:formatNumber type="number" value="${vo.price}"/>&nbsp;원</td>
+							<img alt="thumbnail" src="/resources/upload${vo.filename}">
+							</td>
+							<td><a href="/product/show/${cartList[status.index].productId}">${vo.productName}</a>
+								<input value="${cartList[status.index].productId}" name="productId" type="hidden">
+							</td>
+							<td><fmt:formatNumber type="number" value="${vo.price}"/>&nbsp;원<br>
+								<span><fmt:parseNumber var="test" value="${vo.price / 100}" integerOnly="true"/> ${test}&nbsp;원
+										<input value="${test}" type="hidden" name="getPoint" id="point"></span></td>
 								<td><c:choose>
 										<c:when test="${vo.stock == 0}">
 											<span>품절된 상품입니다.</span>
 										</c:when>
 										<c:otherwise>
-											<select class="form-control">
+											<select class="form-control" name="order_Qty">
 												<c:forEach var="count" begin="1" end="${vo.stock > 5 ? 5 : vo.stock}">
 													<option>${count}</option>
 												</c:forEach>
 											</select>
 										</c:otherwise>
 									</c:choose>
-								</td>
-							<td>${vo.productInfo}</td>
+									</td>
+										<td><c:choose>
+												<c:when
+													test="${productInfo.productDist != 'acc' && productInfo.productDist != 'bag'}">
+													<div class="form-horizontal" style="text-align: left;">
+														<select class="form-control opt_select" name="selected_Opt">
+															<option value="S">S</option>
+															<option value="M">M</option>
+															<option value="L">L</option>
+														</select>
+													</div>
+												</c:when>
+												<c:otherwise></c:otherwise>
+											</c:choose></td>
+										<td>${vo.productInfo}</td>
+									<td>	
+								<c:choose>
+									<c:when test="${vo.stock == 0}">
+										<button class="btn btn-default" disabled="disabled">주문하기</button><br>
+										<button class="btn btn-default del_from_cart" data-pId="${cartList[status.index].productId}">삭제하기</button>
+									</c:when>
+									<c:otherwise>
+										<button class="btn btn-default cart_to_order" data-pId="${cartList[status.index].productId}">주문하기</button>
+										<br>
+										<button class="btn btn-default del_from_cart" data-pId="${cartList[status.index].productId}">삭제하기</button>
+									</c:otherwise>
+								</c:choose> 
+							</td>
 						</tr>
 					</c:forEach>
 					</c:when>
@@ -200,16 +236,13 @@ if(chk) {
 					</c:otherwise></c:choose>
 				</tbody>
 			</table>
-		</div>
+		</form>
+	</div>
 		
 		<div class="row" style="text-align: center; margin: 80px 0;">
-			<button class="btn btn-default" type="submit" id="orderSuccess">선택한 상품 주문하기</button>
 			<button class="btn btn-default btn-back_to_shop">쇼핑을 계속하기</button>
 		</div>
-		<form action="/order/cartOrder" method="post">
-			<input type="hidden" value="" name="productId">
-			<input type="hidden" value="" name="order_Qty">
-		</form>
+	
 	</div>
 
 <script type="text/javascript">
@@ -218,23 +251,74 @@ if(chk) {
 		
 		var userid = $("#login_userid").val();
 		
+		$(".del_from_cart").click(function(event) {
+			event.preventDefault();
+			var item = $(this);
+			var productId = item.attr("data-pId");
+			var userid = $("#login_userid").val();
+			
+			$.ajax({
+				
+				type : 'post',
+				url : '/order/delFromCart',
+				data : {
+					productId : productId,
+					userid : userid
+				},
+				dataType : 'text',
+				success : function(result) {
+					
+					if (result == 'ok') {
+						alert("장바구니에서 삭제되었습니다.");
+						location.assign("/order/mycart/" + userid);
+					} else {
+						alert("이미 삭제 된 상품입니다.");
+					}
+				}
+			});
+			
+			
+		});
+		
+		
+		$(".cart_to_order").click(function(event) {
+			event.preventDefault();
+			
+			if (userid != null) {
+				var item = $(this);
+				var productId = item.attr("data-pId");
+				
+				location.assign("/order/insert/" + productId);
+			} else {
+				alert("로그인이 필요합니다.");
+				location.assign("/member/login");
+			}
+
+			
+		});
+		
 		 $("#orderSuccess").click(function () {
+			 
              var checkArr = new Array();
+
+             
              $("input[class='chkbox']:checked").each(function () {
                  checkArr.push($(this).attr("data-cartNum"));
+
              });
 
              $("#chk").val(checkArr);
+ 
 
-            if (confirm("주문완료 하시겠습니까?")) {
-                 alert("주문 감사합니다.");
+            if (confirm("주문 하시겠습니까?")) {
+ 
                  $("#orderForm").submit();
-                console.log(checkArr);
+                 console.log(checkArr);
              }
          });
 		
 		$(".btn-back_to_shop").click(function() {
-			history.back();
+			location.assign("/");
 		});
 		
 		
@@ -246,7 +330,12 @@ if(chk) {
 		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 		
 		

@@ -68,14 +68,12 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li>ABOUT</li>
-				<li>OUTER</li>
-				<li>TOP</li>
-				<li>BOTTOM</li>
-				<li>BAG</li>
-				<li>ACC</li>
-				<li>SALE</li>
-				<li>EVENT</li>
+				<li value="outer">OUTER</li>
+				<li value="top">TOP</li>
+				<li value="bottom">BOTTOM</li>
+				<li value="bag">BAG</li>
+				<li value="acc">ACC</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -148,6 +146,9 @@
 		</div><!-- class=row -->
 	</div><!-- class=container -->
 
+	<div class="footer">
+		<p>@copyright EZEN computer art academy</p>
+	</div>
 
 <script type="text/javascript">
 
@@ -201,6 +202,16 @@
 				}
 			});
 			
+		});
+		
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 		
 		

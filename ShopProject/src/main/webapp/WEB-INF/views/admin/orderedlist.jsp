@@ -106,14 +106,12 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -149,7 +147,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${orderedList}" var="dto">
+					<c:forEach items="${to.list}" var="dto">
 						<tr>
 							<td><a href="/admin/aboutOrder/${dto.orderId}">${dto.orderId}</a></td>
 							<td>${dto.userid}</td>
@@ -167,6 +165,32 @@
 			</table>
 		</div>
 		<!-- class = row -->
+		<div class="row">
+			<nav aria-label="Page navigation">
+				<ul class="pagination">
+				
+					<li><c:if test="${to.curPage > 1}">
+					<a href="/admin/orderedlist/${to.curPage <= 1 ? 1 : to.curPage-1}" aria-label="Previous"> 
+					<span aria-hidden="true">
+					&laquo;</span></a></c:if></li>
+					<!--  << -->
+					<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
+						<li class="${to.curPage == idx ? 'active' : ''}"><a href="/admin/orderedlist/${idx}">${idx}</a></li>
+						<!-- 현재 페이지와 idx페이지가 같은 경우에만 class값을 부여해 활성화 된 것 처럼 표현해 줄 수 있다. -->
+						<!-- curPage와 idx가 같니? 그렇다면 class에는 active값을 부여해주고, 아니면 그냥 빈칸으로 둬라. -->
+					</c:forEach>
+
+					<li><c:if test="${to.curPage < to.totalPage}">
+					<a href="/admin/orderedlist/${to.curPage >= to.totalPage ? to.totalPage : to.curPage+1}" aria-label="Next">
+					<!-- 삼항연산자를 사용해 curPage가 totalPage보다 크면 totalPage값을 가질 수 있도록 설정해줌 -->
+					<span aria-hidden="true">
+					&raquo;</span></a></c:if></li>
+					<!-- >> -->
+				</ul>
+			</nav>
+
+		</div>			
+		
 	</div>
 
 <script type="text/javascript">
@@ -175,7 +199,12 @@
 		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 
 		

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.board">
+
+	<select id="list" resultType="kr.co.domain.BoardDTO">
+		SELECT * FROM qna ORDER BY boardId DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO qna (boardId, userid, title, content, qna_type)
+		VALUES ((SELECT NVL2(MAX(boardId), MAX(boardId) +1, 1) FROM qna), #{userid}, #{title}, #{content}, #{qna_type})
+		<selectKey keyProperty="boardId" order="AFTER" resultType="integer">
+			SELECT MAX(boardId) FROM qna
+		</selectKey>
+	</insert>
+	<select id="read" resultType="kr.co.domain.BoardDTO">
+		SELECT * FROM qna WHERE boardId = #{boardId}
+	</select>
+	
+	<select id="reviewList" resultType="kr.co.domain.BoardDTO">
+		SELECT * FROM (SELECT ROWNUM rnum, boardId, userid, title, regDate, qna_type, viewCnt 
+		FROM (SELECT * FROM qna ORDER BY regDate DESC)) WHERE qna_type = 3 
+	</select>
+	
+	<select id="getAmount" resultType="integer">
+		SELECT COUNT(boardId) FROM qna
+ 	</select>
+ 	
+ 	<update id="updateViewCnt">
+ 		UPDATE qna SET viewCnt = viewCnt + 1 WHERE boardId = #{boardId}
+ 	</update>
+ 	
+ 	<update id="update">
+ 		UPDATE qna SET title = #{title}, content = #{content}, updateDate = SYSDATE WHERE boardId = #{boardId}
+ 	</update>
+ 	
+ 	<delete id="delete">
+ 		DELETE FROM qna WHERE boardId = #{boardId}
+ 	</delete>
+
+	<update id="updateReplyCnt">
+		UPDATE qna SET replyCnt = replyCnt + 1 WHERE boardId = #{boardId}
+	</update>
+	
+	<update id="minusReplyCnt">
+		UPDATE qna SET replyCnt = replyCnt - 1 WHERE boardId = #{boardId}
+	</update>
+	
+	<select id="getReview" resultType="kr.co.domain.BoardDTO">
+		SELECT * FROM qna WHERE productName = #{productName} ORDER BY regDate DESC
+	</select>
+</mapper>

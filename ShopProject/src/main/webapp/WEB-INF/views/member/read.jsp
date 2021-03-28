@@ -66,19 +66,18 @@
 	</div>
 
 	<div class="nav">
-		<nav id="top_nav">
+		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
+
 
 	<div class="container">
 		<div class="row">
@@ -180,19 +179,37 @@
 															dto.deliver_situ == 1 ? "배송중" : "배송완료"}</td>
 												<c:choose>
 													<c:when test="${dto.deliver_situ != 0}">
-														<td>
-															<button class="btn btn-default disable"
-																disabled="disabled">주문취소</button>
-															<br>
-															<button class="btn btn-default disable"
-																disabled="disabled">주문변경</button>
-															<br>
-														</td>
+														<c:choose>
+															<c:when test="${dto.deliver_situ == 1}">
+															<td>
+																<button class="btn btn-default" disabled="disabled">주문취소</button>
+																<br>
+																<button class="btn btn-default" disabled="disabled">주문변경</button>
+															</td>																
+	
+															</c:when>
+															<c:otherwise>
+																<td>
+																<button class="btn btn-default go_to_review">리뷰작성</button>
+																<br>
+																<button class="btn btn-default">구매확정</button>
+																<form action="/board/insert" method="get">
+																	<input type="hidden" name="productName" value="${dto.productName}">
+																	<input type="hidden" name="userid" value="${login.userid}">
+																</form>
+																</td>																
+															</c:otherwise>
+														</c:choose>
 													</c:when>
 													<c:otherwise>
 														<td>
-															<button class="btn btn-default order_cancel"
-																onclick="location.href='/order/cancel/'+ ${dto.orderId}">주문취소</button>
+															<button class="btn btn-default order_cancel" 
+															data-oId="${dto.orderId}" 
+															data-seq="${dto.order_seq_num}"
+															data-pId="${dto.productId}"
+															data-price="${dto.totalAmount}"
+															data-qty="${dto.order_Qty}"
+															>주문취소</button>
 															<br>
 															<button class="btn btn-default">주문변경</button>
 														</td>
@@ -212,6 +229,51 @@
 	</div><!-- class=container -->
 <script type="text/javascript">
 	$(document).ready(function () {
+		
+		var userid = $("#login_userid").val();
+		
+		$(".order_cancel").click(function(event) {
+			event.preventDefault();
+			
+			var item = $(this);
+			var seq_num = item.attr("data-seq");
+			var orderId = item.attr("data-oId");
+			var order_Qty = item.attr("data-qty");
+			var productId = item.attr("data-pId");
+			var aPoint = parseInt(item.attr("data-price") / 100);
+
+ 			$.ajax({
+				
+				type : 'post',
+				url : '/order/cancel',
+				data : {
+					orderId : orderId,
+					order_seq_num : seq_num,
+					getPoint : aPoint,
+					order_Qty : order_Qty,
+					productId : productId,
+					userid : userid
+				},
+				dataType : 'text',
+				success : function(result) {
+					if (result == 1) {
+						
+						alert("주문이 취소되었습니다.");
+						location.assign("/member/read/" + userid);
+					} else {
+						
+						alert("주문을 취소할 수 없습니다.");
+					}
+				}
+			});  
+			
+		});
+		
+		$(".go_to_review").click(function(event) {
+			event.preventDefault();
+			
+			$("form").submit();
+		});
 		
 		$("#mycart_btn").click(function(event) {
 			event.preventDefault();
@@ -261,6 +323,17 @@
 			if (logout) {
 				location.assign("/member/logout");
 			} 
+		});
+		
+		
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
 		
 		$("#go_to_adminPage").click(function(event) {

@@ -6,7 +6,7 @@ import kr.co.domain.ProductDTO;
 
 public interface ProductService {
 
-	List<ProductDTO> list();
+	List<ProductDTO> list(int curPage);
 
 	ProductDTO read(String productId);
 
@@ -26,6 +26,8 @@ public interface ProductService {
 
 	List<ProductDTO> newProductList();
 
-	List<ProductDTO> productList();
+	List<ProductDTO> productList(int curPage);
+
+	int getAmount();
 
 }

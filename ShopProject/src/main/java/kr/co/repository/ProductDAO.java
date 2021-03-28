@@ -7,7 +7,7 @@ import kr.co.domain.ProductDTO;
 
 public interface ProductDAO {
 
-	List<ProductDTO> list();
+	List<ProductDTO> list(int curPage);
 
 	ProductDTO read(String productId);
 
@@ -35,6 +35,12 @@ public interface ProductDAO {
 
 	List<ProductDTO> newProductList();
 
-	List<ProductDTO> productList();
+	List<ProductDTO> productList(int curPage);
+
+	int getAmount();
+
+	void plusProductStock(OrderDTO orderDTO);
+
+	void minusSoldRate(OrderDTO orderDTO);
 
 }

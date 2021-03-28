@@ -1,6 +1,8 @@
 package kr.co.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import kr.co.domain.CartDTO;
 import kr.co.domain.MemberVO;
 import kr.co.domain.OrderDTO;
+import kr.co.domain.PageTO;
 import kr.co.domain.ProductDTO;
 import kr.co.service.CartService;
 import kr.co.service.MemberService;
@@ -42,17 +45,71 @@ public class OrderController {
 	@Inject
 	private OrderService orderService;
 	
+	
+	@ResponseBody
+	@RequestMapping(value = "/cancel", method = RequestMethod.POST)
+	public int orderCancel(OrderDTO orderDTO, @ModelAttribute("getPoint") int getPoint) {
+		
+		System.out.println(getPoint);
+		int result = orderService.orderCancel(orderDTO);
+		return result;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/delFromCart", method = RequestMethod.POST)
+	public String delFromCart(CartDTO cartDTO) {
+		
+		boolean result = orderService.delFromCart(cartDTO);
+		if (result) {
+			return "ok";
+		} else {
+			return "no";
+		}
+	}
+	
+	
+	@RequestMapping(value = "/orderresult", method = RequestMethod.POST)
+	public void cartOrderResult(OrderDTO[] arr) {
+		
+		for (int i = 0; i < arr.length; i++) {
+			OrderDTO dto = arr[i];
+			System.out.println(dto);
+		}
+		
+	}
+	
 	@RequestMapping(value = "/cartOrder", method = RequestMethod.POST)
-	public void orderAllCartProduct(HttpSession session, OrderDTO orderDTO, 
-			@RequestParam(value = "chd[]") List<String> myCartList) {
+	public String orderAllCartProduct(HttpSession session, 
+			@RequestParam(value = "chd[]") List<String> myCartList, Model model,
+			@ModelAttribute("selected_Opt") String selected_Opt, 
+			@ModelAttribute("order_Qty") String order_Qty,
+			@ModelAttribute("getPoint") String sGetPoint) {
+		
+		List<ProductDTO> productInfo = new ArrayList<ProductDTO>();
+		
+		for (int i = 0; i < myCartList.size(); i++) {
+			String productId = myCartList.get(i);
+			
+			ProductDTO dto = productService.read(productId);
+			
+			if (dto.getStock() == 0) {
+				continue;
+			} else {
+				productInfo.add(dto);
+			}
+		}
+		
 		MemberVO vo = (MemberVO) session.getAttribute("login");
-		String userid = vo.getUserid();
+		model.addAttribute("memberInfo", vo);
+		model.addAttribute("productInfoList", productInfo);
+		model.addAttribute("selected_Opt", selected_Opt);
+		model.addAttribute("order_Qty", order_Qty);
 		
-		System.out.println(myCartList);
-		System.out.println(userid);
+		int getPoint = Integer.parseInt(sGetPoint);
 		
+		model.addAttribute("getPoint", getPoint);
 		
-		
+		return "order/cartOrder";
 	}
 	
 	@RequestMapping(value = "/orderResult", method = RequestMethod.POST)
@@ -111,6 +168,8 @@ public class OrderController {
 			@ModelAttribute("getPoint") String sGetPoint) {
 		
 		MemberVO vo = (MemberVO) session.getAttribute("login");
+		System.out.println(vo.getUserid());
+		System.out.println(productDTO.getProductId());
 		vo = memberService.read(vo.getUserid());
 		productDTO = productService.read(productDTO.getProductId());
 		
@@ -122,6 +181,23 @@ public class OrderController {
 		int getPoint = Integer.parseInt(sGetPoint);
 		model.addAttribute("getPoint", getPoint);
 		
+		
+		return "order/orderconfirm";
+	}
+	
+	@RequestMapping(value = "/insert/{productId}", method = RequestMethod.GET)
+	public String orderInsert(@PathVariable("productId") String productId, HttpSession session, Model model) {
+		
+		
+		MemberVO vo = (MemberVO) session.getAttribute("login");
+		vo = memberService.read(vo.getUserid());
+		ProductDTO productDTO = productService.read(productId);
+		
+		int getPoint = (productDTO.getPrice() / 100);
+		
+		model.addAttribute("memberInfo", vo);
+		model.addAttribute("productInfo", productDTO);
+		model.addAttribute("getPoint", getPoint);
 		
 		return "order/orderconfirm";
 	}
@@ -162,11 +238,16 @@ public class OrderController {
 	
 	
 	@RequestMapping(value = "/productList", method = RequestMethod.GET)
-	public List<ProductDTO> productList() {
+	public PageTO<ProductDTO> productList(int curPage) {
 		
-		List<ProductDTO> list = productService.list();
+		List<ProductDTO> list = productService.list(curPage);
+		int amount = productService.getAmount();
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
 		
-		return list;
+		to.setAmount(amount);
+		to.setList(list);
+		
+		return to;
 	}
 
 }

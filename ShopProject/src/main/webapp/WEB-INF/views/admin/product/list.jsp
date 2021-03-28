@@ -104,14 +104,12 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -121,9 +119,9 @@
 	<div class="row side_nav">
 		<ul class="nav nav-pills nav-stacked">
 			<li class="li_btns"><a href="/admin/orderedlist">주문 현황</a></li>
-			<li class="li_btns active"><a href="/admin/list">회원 관리</a></li>
+			<li class="li_btns"><a href="/admin/list">회원 관리</a></li>
 			<li class="li_btns"><a href="/admin/product/insert">상품 등록</a></li>
-			<li class="li_btns"><a href="/admin/product/list">상품 조회</a></li>
+			<li class="li_btns active"><a href="/admin/product/list">상품 조회</a></li>
 		</ul>
 	</div>
 
@@ -146,7 +144,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${productList}" var="dto">
+					<c:forEach items="${to.list}" var="dto">
 						<tr>
 							<td><a href="/admin/product/read/${dto.productId}">${dto.productId}</a></td>
 							<td>${dto.productName}</td>
@@ -163,31 +161,75 @@
 			</table>
 		</div>
 		<!-- class = row -->
+		<div class="row">
+			<nav aria-label="Page navigation">
+				<ul class="pagination">
+				
+					<li><c:if test="${to.curPage > 1}">
+					<a href="/admin/product/list/${to.curPage <= 1 ? 1 : to.curPage-1}" aria-label="Previous"> 
+					<span aria-hidden="true">
+					&laquo;</span></a></c:if></li>
+					<!--  << -->
+					<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
+						<li class="${to.curPage == idx ? 'active' : ''}"><a href="/admin/product/list/${idx}">${idx}</a></li>
+						<!-- 현재 페이지와 idx페이지가 같은 경우에만 class값을 부여해 활성화 된 것 처럼 표현해 줄 수 있다. -->
+						<!-- curPage와 idx가 같니? 그렇다면 class에는 active값을 부여해주고, 아니면 그냥 빈칸으로 둬라. -->
+					</c:forEach>
+
+					<li><c:if test="${to.curPage < to.totalPage}">
+					<a href="/admin/product/list/${to.curPage >= to.totalPage ? to.totalPage : to.curPage+1}" aria-label="Next">
+					<!-- 삼항연산자를 사용해 curPage가 totalPage보다 크면 totalPage값을 가질 수 있도록 설정해줌 -->
+					<span aria-hidden="true">
+					&raquo;</span></a></c:if></li>
+					<!-- >> -->
+				</ul>
+			</nav>
+
+		</div>	
+		
+		<div class="row" style="text-align: center; margin-left: 360px; margin-bottom: 100px;">
+			<div class="input-group" style="margin-top: 50px; width: 50%;">
+				<span class="input-group-addon">
+				<!-- button이 아닐 경우에는 class를 input-group-addon로 지정해준다 -->
+					<select id="searchSel">
+						<optgroup label="검색 기준">
+						<option value="productName">상품명</option>
+						<option value="productId">상품ID</option>
+						<option value="productDist">상품구분</option>
+						</optgroup>
+					</select>
+				</span>
+    	 		<input id="keyword" type="text" class="form-control " placeholder="검색어를 입력하세요.">
+      			<span class="input-group-btn">
+        		<button id="search_btn" class="btn btn-default" type="button">검색</button></span>
+    		</div><!-- /input-group -->	
+		</div>
 	</div>
+	</div>
+
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
 		
-		$("li").on('click', function() {
-			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+		$("#search_btn").click(function(){
+			
+			var searchType = $("#searchSel option:selected").val();
+			var keyword = $("#keyword").val();
+			var url = "/admin/product/list/"+searchType+"/"+keyword+"/1";
+			window.open(url);
+			
 		});
 		
-		$.getJSON("/admin/productList", function(result) {
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
 			
-			var str = '';
-			
-			$(result).each(function() {
-				var data = this; 
-				console.log(data);
-				
-				str += makeHtmlcode_list(data);
-					
-			});
-			
-			$(".products").html(str);
-			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
 		});
+		
 		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();

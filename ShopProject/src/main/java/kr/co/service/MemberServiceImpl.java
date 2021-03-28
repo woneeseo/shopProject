@@ -57,9 +57,33 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public List<MemberVO> list() {
+	public List<MemberVO> list(int curPage) {
 		
-		return memberDAO.list();
+		return memberDAO.list(curPage);
+	}
+
+	@Override
+	public MemberVO findIdByNameAndEmail(MemberVO vo) {
+		
+		return memberDAO.findIdByNameAndEmail(vo);
+	}
+
+	@Override
+	public MemberVO findPwByNameAndEmail(MemberVO vo) {
+		
+		return memberDAO.findPwByNameAndEmail(vo);
+	}
+
+	@Override
+	public int getAmount() {
+		
+		return memberDAO.getAmount();
+	}
+
+	@Override
+	public int memberDelete(String userid) {
+		
+		return memberDAO.memberDelete(userid);
 	}
 
 }

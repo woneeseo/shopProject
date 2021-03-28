@@ -35,5 +35,17 @@
 		UPDATE setOrder SET deliver_situ = #{deliver_situ} 
 		WHERE orderId = #{orderId} AND order_seq_num = #{order_seq_num}
 	</update>
+	
+	<delete id="delFromCart">
+		DELETE FROM cart WHERE userid = #{userid} AND productId = #{productId}
+	</delete>
+	
+	<delete id="orderCancel">
+		DELETE FROM setOrder WHERE orderId = #{orderId} AND order_seq_num = #{order_seq_num}
+	</delete>
+	
+	<select id="getAmount" resultType="integer">
+		SELECT COUNT(orderId) FROM setOrder
+	</select>
 
 </mapper>

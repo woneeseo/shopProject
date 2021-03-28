@@ -75,6 +75,7 @@
 
 	
 </style>
+
 </head>
 <body>
 
@@ -111,14 +112,12 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -142,13 +141,42 @@
 		
 		<br>
 		
-		<div class="content">
+		<div class="content" style="margin-top: 200px;">
 			<h1 class="page-header">신규 입고 상품&nbsp;&nbsp;<small>신상품입니다.</small></h1>
 			<div class="row products_new"></div>
-		</div>		
-			
-		<div class="row">
-			<h1 class="page-header">Review&nbsp;&nbsp;<small>소비자들이 직접 남겨준 리뷰입니다.</small></h1>
+		</div>
+
+		<div class="row" style="margin-top: 200px;">
+			<h1 class="page-header">
+				Review&nbsp;&nbsp;<small>소비자들이 직접 남겨준 리뷰입니다.</small>
+			</h1>
+			<div class="row">
+				<div class="row">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>No.</th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>작성일</th>
+								<th>조회수</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach items="${list}" var="vo">
+								<tr>
+									<td>${vo.boardId}</td>
+									<td><a href="/board/read/${vo.boardId}">${vo.title}</a></td>
+									<td>${vo.userid}</td>
+									<td><fmt:formatDate value="${vo.regDate}" type="date"
+											pattern="yyyy-MM-dd" /></td>
+									<td>${vo.viewCnt}</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 		
 	</div>
@@ -156,7 +184,7 @@
 	<hr>
 	
 	<div class="footer">
-		<p>@copyright cookie run</p>
+		<p>@copyright EZEN computer art academy</p>
 	</div>
 
 <script type="text/javascript">
@@ -165,25 +193,14 @@
 		
 		var userid = $("#login_userid").val();
 		
-		$("#mycart_btn").click(function(event) {
-			event.preventDefault();
-			location.assign("/order/mycart/" + userid);
-			
-		});
-		
-		$("li").on('click', function() {
-			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
-		});
-		
 		$.getJSON("/admin/productList", function(result) {
 			
 			var str = '';
 			
 			$(result).each(function() {
+			
 				var data = this; 
 				console.log(data);
-				
 				str += makeHtmlcode_list(data);
 					
 			});
@@ -191,7 +208,7 @@
 			$(".products").html(str);
 			
 		});
-		
+
 		$.getJSON("/admin/newProducts", function(result) {
 			
 			var str = '';
@@ -206,6 +223,57 @@
 			$(".products_new").html(str);
 			
 		});
+		
+		$(".products").on("click", ".btn-incart", function(event) {
+			
+			event.preventDefault();
+			
+			var productId = $(this).attr("value");
+			
+			if (userid == null) {
+				alert("로그인이 필요합니다.");
+				location.assign("/member/login");
+				
+			} else {
+				
+				$.ajax({
+					
+					type : "post",
+					url : "/order/cart/" + productId,
+					data : {
+						productId : productId
+					},
+					dataType : "text",
+					success : function(result) {
+						
+						if (result.trim() == 'add_success') {
+							alert("카트에 등록되었습니다.");
+			
+						} else if (result.trim() == 'already_existed') {
+							alert("이미 카트에 등록된 상품입니다.");
+						}
+					}
+				});
+			} 
+		});
+		
+		$("#mycart_btn").click(function(event) {
+			event.preventDefault();
+			location.assign("/order/mycart/" + userid);
+			
+		});
+		
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}
+			
+		});
+		
 		
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();

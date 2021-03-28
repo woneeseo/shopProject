@@ -19,7 +19,7 @@
 	</insert>
 	
 	<select id="getMyCartProductId" resultType="kr.co.domain.CartDTO">
-		SELECT * FROM cart WHERE userid = #{userid}
+		SELECT * FROM cart WHERE userid = #{userid} ORDER BY regDate DESC
 	</select>
 	
 	<select id="getMyCartList" resultType="kr.co.domain.ProductDTO">

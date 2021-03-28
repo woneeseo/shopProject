@@ -39,9 +39,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter{
 		/* 진짜 세션 작업은 postHandle에서 이루어진다 */
 		HttpSession session = request.getSession();
 		Object login = modelAndView.getModel().get("login");
-		
-		PrintWriter out = response.getWriter();
-		
+
 		if (login != null) {	
 			session.setAttribute("login", login);
 			String dest = (String)session.getAttribute("dest");

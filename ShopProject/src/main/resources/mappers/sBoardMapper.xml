@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.search">
+
+	<sql id="search">
+		<if test="searchType == 'userid'.toString() ">
+			WHERE LOWER(userid) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+		<if test="searchType == 'title'.toString() ">
+			WHERE LOWER(title) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+		<if test="searchType == 'content'.toString() ">
+			WHERE LOWER(content) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+	</sql>
+	
+	<sql id="productSearch">
+		<if test="searchType == 'productName'.toString() ">
+			WHERE LOWER(productName) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+		<if test="searchType == 'productId'.toString() ">
+			WHERE LOWER(productId) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+		<if test="searchType == 'productDist'.toString() ">
+			WHERE LOWER(productDist) LIKE '%'||LOWER(#{keyword})||'%'
+		</if>
+	</sql>
+	<select id="getAmount" resultType="Integer">
+		SELECT COUNT(boardId) FROM qna <include refid="search"></include> 
+	</select>
+	
+	<select id="list" resultType="kr.co.domain.BoardDTO">
+		SELECT * FROM qna <include refid="search"></include> 
+		ORDER BY boardId DESC
+	</select>
+	
+	<select id="searchProductList" resultType="kr.co.domain.ProductDTO">
+		SELECT * FROM product <include refid="productSearch"></include> 
+		ORDER BY regDate DESC
+	</select>
+	
+	<select id="getProductAmount" resultType="Integer">
+		SELECT COUNT(productId) FROM product <include refid="productSearch"></include> 
+	</select>
+
+</mapper>

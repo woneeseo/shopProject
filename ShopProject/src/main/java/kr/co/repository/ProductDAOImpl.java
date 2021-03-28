@@ -1,15 +1,18 @@
 package kr.co.repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import kr.co.domain.OrderDTO;
+import kr.co.domain.PageTO;
 import kr.co.domain.ProductDTO;
 
 @Repository
@@ -20,11 +23,12 @@ public class ProductDAOImpl implements ProductDAO{
 	private final String NS = "kr.co.product";
 
 	@Override
-	public List<ProductDTO> list() {
-		
-		return sqlSession.selectList(NS+".list");
-	}
+	public List<ProductDTO> list(int curPage) {
 
+		return sqlSession.selectList(NS+".list");
+		
+	}
+	
 	@Override
 	public ProductDTO read(String productId) {
 		
@@ -104,9 +108,28 @@ public class ProductDAOImpl implements ProductDAO{
 	}
 
 	@Override
-	public List<ProductDTO> productList() {
+	public List<ProductDTO> productList(int curPage) {
+
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
+		RowBounds rb = new RowBounds(to.getStartNum()-1, to.getPerPage());
+
+		return sqlSession.selectList(NS+".productlist", null, rb);
+	}
+
+	@Override
+	public int getAmount() {
 		
-		return sqlSession.selectList(NS+".productList");
+		return sqlSession.selectOne(NS+".getAmount");
+	}
+
+	@Override
+	public void plusProductStock(OrderDTO orderDTO) {
+		sqlSession.update(NS+".plusProductStock", orderDTO);
+	}
+
+	@Override
+	public void minusSoldRate(OrderDTO orderDTO) {
+		sqlSession.update(NS+".minusSoldRate", orderDTO);
 	}
 
 

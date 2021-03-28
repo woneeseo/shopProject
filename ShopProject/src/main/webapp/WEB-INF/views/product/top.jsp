@@ -111,14 +111,12 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li value="about">ABOUT</li>
 				<li value="outer">OUTER</li>
 				<li value="top">TOP</li>
 				<li value="bottom">BOTTOM</li>
 				<li value="bag">BAG</li>
 				<li value="acc">ACC</li>
-				<li value="sale">SALE</li>
-				<li value="event">EVENT</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
@@ -143,9 +141,16 @@
 			
 		});
 		
+		
 		$("li").on('click', function() {
 			var productDist = $(this).attr("value");
-			location.assign("/product/" + productDist);
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}
+			
 		});
 		
 		var productDist = $("li[value='top']").text().toLowerCase();
@@ -164,6 +169,39 @@
 			
 			$(".products").html(str);
 			
+		});
+		
+		$(".products").on("click", ".btn-incart", function(event) {
+			
+			event.preventDefault();
+			
+			var productId = $(this).attr("value");
+			
+			if (userid == null) {
+				alert("로그인이 필요합니다.");
+				location.assign("/member/login");
+				
+			} else {
+				
+				$.ajax({
+					
+					type : "post",
+					url : "/order/cart/" + productId,
+					data : {
+						productId : productId
+					},
+					dataType : "text",
+					success : function(result) {
+						
+						if (result.trim() == 'add_success') {
+							alert("카트에 등록되었습니다.");
+			
+						} else if (result.trim() == 'already_existed') {
+							alert("이미 카트에 등록된 상품입니다.");
+						}
+					}
+				});
+			} 
 		});
 		
 		$("#go_to_member_insert").click(function(event) {

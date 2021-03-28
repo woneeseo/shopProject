@@ -20,8 +20,18 @@ public interface MemberDAO {
 
 	MemberVO login(LoginDTO dto);
 
-	List<MemberVO> list();
+	List<MemberVO> list(int curPage);
 
 	void insertGetPoint(OrderDTO orderDTO);
+
+	MemberVO findIdByNameAndEmail(MemberVO vo);
+
+	MemberVO findPwByNameAndEmail(MemberVO vo);
+
+	void deleteGetPoint(OrderDTO orderDTO);
+
+	int getAmount();
+
+	int memberDelete(String userid);
 
 }

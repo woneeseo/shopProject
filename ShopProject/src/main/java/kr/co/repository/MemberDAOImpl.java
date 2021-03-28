@@ -4,12 +4,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import kr.co.domain.LoginDTO;
 import kr.co.domain.MemberVO;
 import kr.co.domain.OrderDTO;
+import kr.co.domain.PageTO;
+import kr.co.domain.ProductDTO;
 
 @Repository
 public class MemberDAOImpl implements MemberDAO{
@@ -62,14 +65,45 @@ public class MemberDAOImpl implements MemberDAO{
 	}
 
 	@Override
-	public List<MemberVO> list() {
+	public List<MemberVO> list(int curPage) {
 		
-		return sqlSession.selectList(NS+".list");
+		PageTO<ProductDTO> to = new PageTO<ProductDTO>(curPage);
+		RowBounds rb = new RowBounds(to.getStartNum()-1, to.getPerPage());
+		return sqlSession.selectList(NS+".list", null, rb);
 	}
 
 	@Override
 	public void insertGetPoint(OrderDTO orderDTO) {
 		sqlSession.update(NS+".insertGetPoint", orderDTO);
+	}
+
+	@Override
+	public MemberVO findIdByNameAndEmail(MemberVO vo) {
+		
+		return sqlSession.selectOne(NS+".findIdByNameAndEmail", vo);
+	}
+
+	@Override
+	public MemberVO findPwByNameAndEmail(MemberVO vo) {
+		
+		return sqlSession.selectOne(NS+".findPwByNameAndEmail", vo);
+	}
+
+	@Override
+	public void deleteGetPoint(OrderDTO orderDTO) {
+		sqlSession.update(NS+".deleteGetPoint", orderDTO);
+	}
+
+	@Override
+	public int getAmount() {
+		
+		return sqlSession.selectOne(NS+".getAmount");
+	}
+
+	@Override
+	public int memberDelete(String userid) {
+		
+		return sqlSession.delete(NS+".memberDelete", userid);
 	}
 
 }

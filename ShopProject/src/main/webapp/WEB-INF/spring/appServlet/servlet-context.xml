@@ -49,12 +49,13 @@
 			<mapping path="/member/delete/"/>
 			<mapping path="/member/read/"/>
 			<mapping path="/order/mycart/"/>
+			<mapping path="/board/insert/"/>
 			<beans:ref bean="authinterceptor"/>
 		</interceptor>	
-		<interceptor>
+<!-- 		<interceptor>
 			 <mapping path="/member/loginPost"/>
 			 <beans:ref bean="logininterceptor"/>
-		</interceptor>
+		</interceptor> -->
 	</interceptors>
 	
 	<context:component-scan base-package="kr.co.ezen" />

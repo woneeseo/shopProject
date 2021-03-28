@@ -60,34 +60,33 @@
 	<div class="nav">
 		<nav>
 			<ul class="nav nav-tabs nav-justified">
-				<li>ABOUT</li>
-				<li>OUTER</li>
-				<li>TOP</li>
-				<li>BOTTOM</li>
-				<li>BAG</li>
-				<li>ACC</li>
-				<li>SALE</li>
-				<li>EVENT</li>
+				<li value="outer">OUTER</li>
+				<li value="top">TOP</li>
+				<li value="bottom">BOTTOM</li>
+				<li value="bag">BAG</li>
+				<li value="acc">ACC</li>
+				<li value="qna">Q&A</li>
 			</ul>
 		</nav>
 	</div>
+
 
 	<div class="container logo">
 		<a href="/">Hello World</a>
 	</div>
 
-	<div class="conatiner">
+	<div class="container">
 
 		<div class="row">
 			<form class="form-horizontal" action="/member/loginPost" method="post">
 				<div class="form-group">
-					<label for="inputEmail3" class="col-sm-4 control-label">ID</label>
+					<label for="inputId" class="col-sm-4 control-label">ID</label>
 					<div class="col-sm-4">
 						<input id="inputId" class="form-control" name="userid" placeholder="ID">
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="inputPassword3" class="col-sm-4 control-label">Password</label>
+					<label for="inputPw" class="col-sm-4 control-label">Password</label>
 					<div class="col-sm-4">
 						<input type="password" class="form-control" id="inputPw" name="userpw" placeholder="Password">
 					</div>
@@ -103,19 +102,188 @@
 					</div>
 				</div>
 			</form>
+		</div>
 
-			<div class="row form-group text-center">
+		<div class="row">
+			<div class="form-group text-center">
 				<h3>ID와 비밀번호를 잊어버리셨나요?</h3>
 				<Br>
 				<button class="btn btn-default" id="find_id">ID 찾기</button>
 				<button class="btn btn-default" id="find_pw">비밀번호 찾기</button>
 			</div>
+
+			<div class="collapse form-horizontal" id="find_id_Collapse" style="text-align: center; margin-top: 50px;">
+				<div class="form-group">
+					<label for="input_username" class="col-sm-4 control-label">이름</label>
+					<div class="col-sm-4">
+						<input class="form-control input_username" name="username" placeholder="이름을 입력하세요.">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="input_email" class="col-sm-4 control-label">E-mail</label>
+					<div class="col-sm-4">
+						<input class="form-control input_email" name="email" placeholder="E-mail 주소를 입력하세요.">
+					</div>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-default" id="btn-findId">ID찾기</button>
+				</div>				
+			</div>
+
+			<div class="collapse form-horizontal" id="find_pw_Collapse" style="text-align: center; margin-top: 50px;">
+				<div class="form-group">
+					<label for="input_userid" class="col-sm-4 control-label">ID</label>
+					<div class="col-sm-4">
+						<input class="form-control" id="input_userid" name="userid" placeholder="ID를 입력하세요.">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="input_username" class="col-sm-4 control-label">이름</label>
+					<div class="col-sm-4">
+						<input class="form-control" id="input_username" name="username" placeholder="이름을 입력하세요.">
+					</div>
+				</div>				
+				<div class="form-group">
+					<label for="input_email" class="col-sm-4 control-label">E-mail</label>
+					<div class="col-sm-4">
+						<input class="form-control" id="input_email" name="email" placeholder="E-mail 주소를 입력하세요.">
+					</div>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-default" id="btn-findPw">비밀번호 찾기</button>
+				</div>				
+			</div>		
+		</div>
 	</div>
-</div>
+	
+	<div class="footer">
+		<p>@copyright cookie run</p>
+	</div>
 	
 <script type="text/javascript">
 	
 	$(document).ready(function() {
+		
+		$("li").on('click', function() {
+			var productDist = $(this).attr("value");
+			
+			if (productDist == 'qna') {
+				location.assign("/board/qna");
+			} else {
+				location.assign("/product/" + productDist);
+			}		
+		});
+		
+		$("#find_id").click(function(event) {
+			event.preventDefault();
+			$("#find_id_Collapse").collapse("toggle");
+			$("#find_pw_Collapse").collapse("hide");
+
+		});
+		
+		$("#btn-findId").click(function(evnet) {
+			event.preventDefault();
+					
+			var username = $(".input_username").val();
+			var email = $(".input_email").val();
+			
+			
+  			$.ajax({
+				
+				type : 'post',
+				url : '/member/findId',
+				data : {
+					username : username,
+					email : email
+				},
+				dataType : 'text',
+				success : function(result) {
+					
+					if (result) {			
+						var userid = result;
+						alert("회원님의 ID는 "+ userid + "입니다.");
+						$("#inputId").val(userid);
+						$("#find_id_Collapse").collapse("hide");
+						$(".input_username").val('');
+						$(".input_email").val('');
+					} else {
+						alert("ID를 찾을 수 없습니다.");
+						$(".input_username").val('');
+						$(".input_email").val('');
+					}
+				}
+			});  	
+		});
+		
+		$("#find_pw").click(function(event) {
+			event.preventDefault();
+			$("#find_pw_Collapse").collapse("toggle");
+			$("#find_id_Collapse").collapse("hide");
+		});
+		
+		$("#btn-findPw").click(function(event) {
+			event.preventDefault();
+			
+			var username = $("#input_username").val();
+			var email = $("#input_email").val();
+			var userid = $("#input_userid").val();
+			
+ 			$.ajax({
+				
+				type : 'post',
+				url : '/member/findPw',
+				data : {
+					userid : userid,
+					username : username,
+					email : email
+				},
+				dataType : 'text',
+				success : function(result) {
+					
+					if (result) {
+						var userpw = result;
+						alert("회원님의 비밀번호는 "+ userpw + "입니다.");
+		
+						$("#find_pw_Collapse").collapse("hide");
+						$("#input_userid").val('');
+						$("#input_username").val('');
+						$("#input_email").val('');
+					} else {
+						alert("비밀번호를 찾을 수 없습니다.");
+					}
+				}
+			}); 
+		});
+		
+		$("#login_btn").click(function(event) {
+			event.preventDefault();
+			
+			var userid = $("#inputId").val();
+			var userpw = $("#inputPw").val();
+			
+			$.ajax({
+				
+				type : 'post',
+				url : '/member/loginPost',
+				data : {
+					userid : userid,
+					userpw : userpw
+				},
+				dataType : 'text',
+				success : function(result) {
+					
+					if (result == 'true') {
+						console.log(result);
+						location.assign("/");
+					} else if (result == 'false') {
+						alert("로그인에 실패하였습니다. ID와 비밀번호를 다시한번 확인 해 주세요.")
+						console.log("로그인 실패");
+						console.log(result);
+						
+					}
+				}
+			});
+		});
 
 		$("#go_to_member_insert").click(function(event) {
 			event.preventDefault();
