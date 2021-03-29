@@ -167,18 +167,18 @@
 				<ul class="pagination">
 				
 					<li><c:if test="${spt.curPage > 1}">
-					<a href="/product/qna/${spt.curPage <= 1 ? 1 : spt.curPage-1}" aria-label="Previous"> 
+					<a href="/board/qna/${spt.searchType}/${spt.keyword}/${spt.curPage <= 1 ? 1 : spt.curPage-1}" aria-label="Previous"> 
 					<span aria-hidden="true">
 					&laquo;</span></a></c:if></li>
 					<!--  << -->
 					<c:forEach begin="${spt.beginPageNum}" end="${spt.stopPageNum}" var="idx">
-						<li class="${spt.curPage == idx ? 'active' : ''}"><a href="/product/qna/${idx}">${idx}</a></li>
+						<li class="${spt.curPage == idx ? 'active' : ''}"><a href="/board/qna/${spt.searchType}/${spt.keyword}/${idx}">${idx}</a></li>
 						<!-- 현재 페이지와 idx페이지가 같은 경우에만 class값을 부여해 활성화 된 것 처럼 표현해 줄 수 있다. -->
 						<!-- curPage와 idx가 같니? 그렇다면 class에는 active값을 부여해주고, 아니면 그냥 빈칸으로 둬라. -->
 					</c:forEach>
 
 					<li><c:if test="${spt.curPage < spt.totalPage}">
-					<a href="/product/qna/${spt.curPage >= spt.totalPage ? spt.totalPage : spt.curPage+1}" aria-label="Next">
+					<a href="/board/qna/${spt.searchType}/${spt.keyword}/${spt.curPage >= spt.totalPage ? spt.totalPage : spt.curPage+1}" aria-label="Next">
 					<!-- 삼항연산자를 사용해 curPage가 totalPage보다 크면 totalPage값을 가질 수 있도록 설정해줌 -->
 					<span aria-hidden="true">
 					&raquo;</span></a></c:if></li>
@@ -210,7 +210,7 @@
 	<hr>
 	
 	<div class="footer">
-		<p>@copyright cookie run</p>
+		<p>@copyright EZEN computer art academy</p>
 	</div>
 
 	<script type="text/javascript">

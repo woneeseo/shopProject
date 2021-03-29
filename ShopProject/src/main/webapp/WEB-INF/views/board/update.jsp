@@ -140,6 +140,9 @@
 		</div><!-- class=row -->
 	</div><!-- class=container -->
 
+	<div class="footer">
+		<p>@copyright EZEN computer art academy</p>
+	</div>
 
 <script type="text/javascript">
 

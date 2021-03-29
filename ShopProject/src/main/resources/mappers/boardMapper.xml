@@ -20,8 +20,8 @@
 	</select>
 	
 	<select id="reviewList" resultType="kr.co.domain.BoardDTO">
-		SELECT * FROM (SELECT ROWNUM rnum, boardId, userid, title, regDate, qna_type, viewCnt 
-		FROM (SELECT * FROM qna ORDER BY regDate DESC)) WHERE qna_type = 3 
+		SELECT * FROM (SELECT ROWNUM rnum, boardId, title, viewCnt, regDate, userid, productName FROM qna WHERE qna_type = 3 ORDER BY regDate DESC) 
+		WHERE  rnum BETWEEN 1 AND 10 ORDER BY rnum DESC
 	</select>
 	
 	<select id="getAmount" resultType="integer">
@@ -49,6 +49,7 @@
 	</update>
 	
 	<select id="getReview" resultType="kr.co.domain.BoardDTO">
-		SELECT * FROM qna WHERE productName = #{productName} ORDER BY regDate DESC
+		SELECT * FROM (SELECT ROWNUM rnum, boardId, title, viewCnt, regDate, userid, productName FROM qna WHERE  productName = #{productName} ORDER BY regDate DESC) 
+		WHERE  rnum BETWEEN 1 AND 10 ORDER BY rnum DESC
 	</select>
 </mapper>

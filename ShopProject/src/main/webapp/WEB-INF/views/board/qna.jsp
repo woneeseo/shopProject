@@ -213,9 +213,9 @@
 	<hr>
 	
 	<div class="footer">
-		<p>@copyright cookie run</p>
+		<p>@copyright EZEN computer art academy</p>
 	</div>
-
+	
 	<script type="text/javascript">
 	
 	$(document).ready(function() {

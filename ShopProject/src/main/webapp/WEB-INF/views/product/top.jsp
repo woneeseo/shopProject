@@ -128,6 +128,10 @@
 		<div class="row products"></div>
 		
 	</div>
+	
+	<div class="footer">
+		<p>@copyright EZEN computer art academy</p>
+	</div>
 
 <script type="text/javascript">
 	

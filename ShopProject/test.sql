@@ -182,3 +182,6 @@ CREATE TABLE reply(
 	CONSTRAINT reply_fk_boardId FOREIGN KEY(boardId) REFERENCES qna(boardId)
 	ON DELETE CASCADE
 )
+
+		SELECT * FROM (SELECT ROWNUM rnum, boardId, title, viewCnt, regDate, userid, productName FROM qna WHERE  productName = '[팬츠] 스키니진' ORDER BY regDate DESC) 
+		WHERE  rnum BETWEEN 1 AND 10 ORDER BY rnum DESC

@@ -185,6 +185,10 @@
 			<button class="btn btn-default mycart_btn">장바구니로 이동하기</button>
 		</div>
 	</div>
+	
+	<div class="footer">
+		<p>@copyright EZEN computer art academy</p>
+	</div>	
 
 <script type="text/javascript">
 	
